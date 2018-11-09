@@ -1,17 +1,19 @@
 {
   "name": "@slimio/generator",
-  "version": "1.0.0",
-  "main": "Project-Generator.js",
+  "version": "0.1.0",
+  "main": "./bin/index.js",
   "preferGlobal": true,
   "bin": {
-    "generator": "./project-generator.js"
+    "generator": "./bin/index.js"
   },
   "dependencies": {
     "execa": "^1.0.0",
     "inquirer": "^6.2.0"
   },
   "devDependencies": {
-    "@types/node": "^10.12.3"
+    "@slimio/eslint-config": "^1.1.8",
+    "@types/node": "^10.12.3",
+    "eslint": "^5.8.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
