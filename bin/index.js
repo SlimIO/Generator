@@ -73,7 +73,6 @@ async function main() {
         obj.name = `@slimio/${response.projectname}`;
         obj.description = response.projectdesc;
         const finalPayload = Object.assign(obj, DEFAULT_PKG);
-        console.log(finalPayload);
 
         await writeFile(cwdPackage, JSON.stringify(finalPayload, null, 2));
     }
