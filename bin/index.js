@@ -85,6 +85,20 @@ async function main() {
     if (response.includers === true) {
         await execa("mkdir include");
         await transfertFiles(DEFAULT_FILES_INCLUDE, join(cwd, "include"));
+
+        // Handle binding.gyp
+
+        {
+            const cwdGyp = join(cwd, "..", "template", "binding.gyp");
+            const cwdgyp = join(cwd, "binding.gyp");
+
+            const buf = await readFile(cwdGyp);
+            const obj = JSON.parse(buf.toString());
+            obj.targets[0].target_name = response.projectname;
+            obj.targets[0].sources = `${response.projectname}.cpp`;
+
+            await writeFile(cwdgyp, JSON.stringify(obj, null, 2));
+        }
     }
 
     // Handle Package.json
