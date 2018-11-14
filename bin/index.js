@@ -18,6 +18,7 @@ const DEFAULT_PKG = require("../template/package.json");
 const ROOT_DIR = join(__dirname, "..");
 const TEMPLATE_DIR = join(ROOT_DIR, "template");
 const DEFAULT_FILES_DIR = join(TEMPLATE_DIR, "defaultFiles");
+const DEFAULT_FILES_INCLUDE = join(TEMPLATE_DIR, "include");
 
 // QUESTIONS
 const GEN_QUESTIONS = [
@@ -32,6 +33,12 @@ const GEN_QUESTIONS = [
         name: "projectdesc"
     }
 ];
+
+const INCLUDERS_ASK = {
+    message: "Voulez vous ajoutez les includer C++",
+    type: "confirm",
+    name: "includers"
+};
 
 /**
  * @async
@@ -85,5 +92,27 @@ async function main() {
         .replace(/\${desc}/gm, `${response.projectdesc}`);
 
     await writeFile(join(cwd, "README.md"), finalReadme);
+
+    // C++ INCLUDERS_ASK
+    const askIncluder = await inquirer.prompt(INCLUDERS_ASK);
+
+    if (askIncluder.includers === true) {
+        await execa("mkdir include");
+        const NEW_INCLUDE_DIR = join(cwd, "include");
+        const tplFiles2 = await readdir(DEFAULT_FILES_INCLUDE);
+        for (const fileName of tplFiles2) {
+            const rS = createReadStream(join(DEFAULT_FILES_INCLUDE, fileName), {
+                highWaterMark: 1024
+            });
+            const wS2 = createWriteStream(join(NEW_INCLUDE_DIR, fileName));
+            for await (const buf of rS) {
+                wS2.write(buf);
+            }
+            wS2.end();
+        }
+    }
+    else {
+        process.exit(0);
+    }
 }
 main().catch(console.error);
