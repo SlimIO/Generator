@@ -40,23 +40,23 @@ const GEN_QUESTIONS = [
 
 /**
  * @async
- * @function COPY_PASTE_DIR
- * @desc Read and Write a directory with a stream
+ * @function transfertFiles
+ * @desc Transfer all files in a given directory to a new given directory (the target).
+ * @param {!String} currDir current Directory where file are stored
+ * @param {!String} targetDir target Directory where files should be transfered
  * @returns {Promise<void>}
- * @param {string} DIR directory
- * @param {string} NEWDIR new directory
  */
-async function COPY_PASTE_DIR(DIR, NEWDIR) {
-    const AllFiles = await readdir(DIR);
+async function transfertFiles(currDir, targetDir) {
+    const AllFiles = await readdir(currDir);
     for (const fileName of AllFiles) {
-        const rS = createReadStream(join(DIR, fileName), {
+        const rS = createReadStream(join(currDir, fileName), {
             highWaterMark: 1024
         });
-        const wS2 = createWriteStream(join(NEWDIR, fileName));
+        const wS = createWriteStream(join(targetDir, fileName));
         for await (const buf of rS) {
-            wS2.write(buf);
+            wS.write(buf);
         }
-        wS2.end();
+        wS.end();
     }
 }
 
@@ -76,7 +76,7 @@ async function main() {
     await execa("npm init -y");
 
     // Write default projects files
-    await COPY_PASTE_DIR(DEFAULT_FILES_DIR, cwd);
+    await transfertFiles(DEFAULT_FILES_DIR, cwd);
 
     // Ask projectName/projectDesc and C++ INCLUDERS_ASK
     const response = await inquirer.prompt(GEN_QUESTIONS);
@@ -84,8 +84,7 @@ async function main() {
     // INCLUDERS_ASK
     if (response.includers === true) {
         await execa("mkdir include");
-        const NEW_INCLUDE_DIR = join(cwd, "include");
-        await COPY_PASTE_DIR(DEFAULT_FILES_INCLUDE, NEW_INCLUDE_DIR);
+        await transfertFiles(DEFAULT_FILES_INCLUDE, join(cwd, "include"));
     }
 
     // Handle Package.json
