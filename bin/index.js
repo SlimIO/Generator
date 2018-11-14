@@ -31,14 +31,34 @@ const GEN_QUESTIONS = [
         message: "Add a description (optional)",
         type: "input",
         name: "projectdesc"
-    }
-];
+    },
+    {
+        message: "Voulez vous ajoutez les includer C++",
+        type: "confirm",
+        name: "includers"
+    }];
 
-const INCLUDERS_ASK = {
-    message: "Voulez vous ajoutez les includer C++",
-    type: "confirm",
-    name: "includers"
-};
+/**
+ * @async
+ * @function COPY_PASTE_DIR
+ * @desc Read and Write a directory with a stream
+ * @returns {Promise<void>}
+ * @param {string} DIR directory
+ * @param {string} NEWDIR new directory
+ */
+async function COPY_PASTE_DIR(DIR, NEWDIR) {
+    const AllFiles = await readdir(DIR);
+    for (const fileName of AllFiles) {
+        const rS = createReadStream(join(DIR, fileName), {
+            highWaterMark: 1024
+        });
+        const wS2 = createWriteStream(join(NEWDIR, fileName));
+        for await (const buf of rS) {
+            wS2.write(buf);
+        }
+        wS2.end();
+    }
+}
 
 /**
  * @async
@@ -56,20 +76,17 @@ async function main() {
     await execa("npm init -y");
 
     // Write default projects files
-    const tplFiles = await readdir(DEFAULT_FILES_DIR);
-    for (const fileName of tplFiles) {
-        const rS = createReadStream(join(DEFAULT_FILES_DIR, fileName), {
-            highWaterMark: 1024
-        });
-        const wS = createWriteStream(join(cwd, fileName));
-        for await (const buf of rS) {
-            wS.write(buf);
-        }
-        wS.end();
-    }
+    await COPY_PASTE_DIR(DEFAULT_FILES_DIR, cwd);
 
-    // Ask projectName and projectDesc
+    // Ask projectName/projectDesc and C++ INCLUDERS_ASK
     const response = await inquirer.prompt(GEN_QUESTIONS);
+
+    // INCLUDERS_ASK
+    if (response.includers === true) {
+        await execa("mkdir include");
+        const NEW_INCLUDE_DIR = join(cwd, "include");
+        await COPY_PASTE_DIR(DEFAULT_FILES_INCLUDE, NEW_INCLUDE_DIR);
+    }
 
     // Handle Package.json
     {
@@ -92,27 +109,5 @@ async function main() {
         .replace(/\${desc}/gm, `${response.projectdesc}`);
 
     await writeFile(join(cwd, "README.md"), finalReadme);
-
-    // C++ INCLUDERS_ASK
-    const askIncluder = await inquirer.prompt(INCLUDERS_ASK);
-
-    if (askIncluder.includers === true) {
-        await execa("mkdir include");
-        const NEW_INCLUDE_DIR = join(cwd, "include");
-        const tplFiles2 = await readdir(DEFAULT_FILES_INCLUDE);
-        for (const fileName of tplFiles2) {
-            const rS = createReadStream(join(DEFAULT_FILES_INCLUDE, fileName), {
-                highWaterMark: 1024
-            });
-            const wS2 = createWriteStream(join(NEW_INCLUDE_DIR, fileName));
-            for await (const buf of rS) {
-                wS2.write(buf);
-            }
-            wS2.end();
-        }
-    }
-    else {
-        process.exit(0);
-    }
 }
 main().catch(console.error);
