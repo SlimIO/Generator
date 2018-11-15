@@ -94,6 +94,8 @@ async function main() {
 
             const buf = await readFile(cwdGyp);
             const obj = JSON.parse(buf.toString());
+
+            // eslint-disable-next-line
             obj.targets[0].target_name = response.projectname;
             obj.targets[0].sources = `${response.projectname}.cpp`;
 
