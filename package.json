@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "execa": "^1.0.0",
+    "got": "^9.3.2",
     "inquirer": "^6.2.0"
   },
   "devDependencies": {

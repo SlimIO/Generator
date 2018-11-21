@@ -7,6 +7,7 @@ const { join } = require("path");
 // Require Third-party Dependencies
 const execa = require("execa");
 const inquirer = require("inquirer");
+const got = require("got");
 
 // Require Internal Dependencies
 const DEFAULT_PKG = require("../template/package.json");
@@ -18,6 +19,33 @@ const ROOT_DIR = join(__dirname, "..");
 const TEMPLATE_DIR = join(ROOT_DIR, "template");
 const DEFAULT_FILES_DIR = join(TEMPLATE_DIR, "defaultFiles");
 const DEFAULT_FILES_INCLUDE = join(TEMPLATE_DIR, "include");
+const DEV_DEPENDENCIES = [
+    "@commitlint/cli",
+    "@commitlint/config-conventional",
+    "@escommunity/minami",
+    "@slimio/eslint-config",
+    "@types/node",
+    "ava",
+    "cross-env",
+    "eslint",
+    "husky",
+    "jsdoc",
+    "nyc",
+    "pkg-ok"
+];
+
+/**
+ * @async
+ * @function getLastPackageVersion
+ * @param {!String} pkgName pkgName
+ * @returns {Promise<[String, String]>}
+ */
+async function getLastPackageVersion(pkgName) {
+    const { body } = await got(`https://registry.npmjs.org/${pkgName}`);
+    const reg = JSON.parse(body);
+
+    return [pkgName, Object.keys(reg.time).pop()];
+}
 
 /**
  * @async
@@ -61,15 +89,24 @@ async function main() {
         const cwdPackage = join(cwd, "package.json");
 
         const buf = await readFile(cwdPackage);
-        const obj = JSON.parse(buf.toString());
-        obj.name = `@slimio/${response.projectname}`;
-        obj.description = response.projectdesc;
-        const finalPayload = Object.assign(obj, DEFAULT_PKG);
+        const pkg = JSON.parse(buf.toString());
+        pkg.name = `@slimio/${response.projectname}`;
+        pkg.description = response.projectdesc;
+        pkg.devDependencies = {};
 
-        await writeFile(cwdPackage, JSON.stringify(finalPayload, null, 2));
+        console.log("Seeking latest package(s) version on npm registery!");
+        const pkgVersions = await Promise.all(
+            DEV_DEPENDENCIES.map((pkgName) => getLastPackageVersion(pkgName))
+        );
+        for (const [name, version] of pkgVersions) {
+            pkg.devDependencies[name] = `^${version}`;
+        }
+
+        await writeFile(cwdPackage, JSON.stringify(Object.assign(pkg, DEFAULT_PKG), null, 2));
     }
 
     // Handle README.md
+    console.log("Writing default README.md");
     const buf = await readFile(join(TEMPLATE_DIR, "README.md"));
 
     const finalReadme = buf.toString()
@@ -77,5 +114,7 @@ async function main() {
         .replace(/\${desc}/gm, `${response.projectdesc}`);
 
     await writeFile(join(cwd, "README.md"), finalReadme);
+
+    console.log("Done with no errors...");
 }
 main().catch(console.error);
