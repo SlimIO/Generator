@@ -1,10 +1,7 @@
 #!/usr/bin/env node
 
 // Require Node.js Dependencies
-const {
-    createReadStream, createWriteStream,
-    promises: { readdir, readFile, writeFile }
-} = require("fs");
+const { readFile, writeFile } = require("fs").promises;
 const { join } = require("path");
 
 // Require Third-party Dependencies
@@ -14,34 +11,13 @@ const inquirer = require("inquirer");
 // Require Internal Dependencies
 const DEFAULT_PKG = require("../template/package.json");
 const GEN_QUESTIONS = require("../src/questions.json");
+const { transfertFiles } = require("../src/utils");
 
 // CONSTANTS
 const ROOT_DIR = join(__dirname, "..");
 const TEMPLATE_DIR = join(ROOT_DIR, "template");
 const DEFAULT_FILES_DIR = join(TEMPLATE_DIR, "defaultFiles");
 const DEFAULT_FILES_INCLUDE = join(TEMPLATE_DIR, "include");
-
-/**
- * @async
- * @function transfertFiles
- * @desc Transfer all files in a given directory to a new given directory (the target).
- * @param {!String} currDir current Directory where file are stored
- * @param {!String} targetDir target Directory where files should be transfered
- * @returns {Promise<void>}
- */
-async function transfertFiles(currDir, targetDir) {
-    const AllFiles = await readdir(currDir);
-    for (const fileName of AllFiles) {
-        const rS = createReadStream(join(currDir, fileName), {
-            highWaterMark: 1024
-        });
-        const wS = createWriteStream(join(targetDir, fileName));
-        for await (const buf of rS) {
-            wS.write(buf);
-        }
-        wS.end();
-    }
-}
 
 /**
  * @async
