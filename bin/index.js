@@ -13,30 +13,13 @@ const inquirer = require("inquirer");
 
 // Require Internal Dependencies
 const DEFAULT_PKG = require("../template/package.json");
+const GEN_QUESTIONS = require("../src/questions.json");
 
 // CONSTANTS
 const ROOT_DIR = join(__dirname, "..");
 const TEMPLATE_DIR = join(ROOT_DIR, "template");
 const DEFAULT_FILES_DIR = join(TEMPLATE_DIR, "defaultFiles");
 const DEFAULT_FILES_INCLUDE = join(TEMPLATE_DIR, "include");
-
-// QUESTIONS
-const GEN_QUESTIONS = [
-    {
-        message: "What is the name of your project",
-        type: "input",
-        name: "projectname"
-    },
-    {
-        message: "Add a description (optional)",
-        type: "input",
-        name: "projectdesc"
-    },
-    {
-        message: "Voulez vous ajoutez les includer C++",
-        type: "confirm",
-        name: "includers"
-    }];
 
 /**
  * @async

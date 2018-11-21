@@ -1,0 +1,17 @@
+[
+    {
+        "message": "What is the name of your project",
+        "type": "input",
+        "name": "projectname"
+    },
+    {
+        "message": "Add a description (optional)",
+        "type": "input",
+        "name": "projectdesc"
+    },
+    {
+        "message": "Voulez vous ajoutez les includer C++",
+        "type": "confirm",
+        "name": "includers"
+    }
+]
