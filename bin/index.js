@@ -46,20 +46,14 @@ async function main() {
         await transfertFiles(DEFAULT_FILES_INCLUDE, join(cwd, "include"));
 
         // Handle binding.gyp
+        const buf = await readFile(join(TEMPLATE_DIR, "binding.gyp"));
+        const gyp = JSON.parse(buf.toString());
 
-        {
-            const cwdGyp = join(cwd, "..", "template", "binding.gyp");
-            const cwdgyp = join(cwd, "binding.gyp");
+        // eslint-disable-next-line
+        gyp.targets[0].target_name = response.projectname;
+        gyp.targets[0].sources = `${response.projectname}.cpp`;
 
-            const buf = await readFile(cwdGyp);
-            const obj = JSON.parse(buf.toString());
-
-            // eslint-disable-next-line
-            obj.targets[0].target_name = response.projectname;
-            obj.targets[0].sources = `${response.projectname}.cpp`;
-
-            await writeFile(cwdgyp, JSON.stringify(obj, null, 2));
-        }
+        await writeFile(join(cwd, "binding.gyp"), JSON.stringify(gyp, null, 4));
     }
 
     // Handle Package.json
