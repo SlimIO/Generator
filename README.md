@@ -18,6 +18,8 @@ The package will install globally the command `generator`. Just run this command
 
 ## Roadmap
 
+- Register project on a local DB for security!
+- Add commands (update, upgrade)
+- Add versioning script!
 - Automatically find Node.js C++ header (for C Project).
-- Find/Install C++ project dependencies.
 - Add test
