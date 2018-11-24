@@ -15,6 +15,7 @@ const GEN_QUESTIONS = require("../src/questions.json");
 const { transfertFiles } = require("../src/utils");
 
 // CONSTANTS
+const FILE_INDENTATION = 4;
 const ROOT_DIR = join(__dirname, "..");
 const TEMPLATE_DIR = join(ROOT_DIR, "template");
 const DEFAULT_FILES_DIR = join(TEMPLATE_DIR, "defaultFiles");
@@ -33,6 +34,11 @@ const DEV_DEPENDENCIES = [
     "jsdoc",
     "nyc",
     "pkg-ok"
+];
+
+const NAPI_DEPENDENCIES = [
+    "node-addon-api",
+    "node-gyp-build"
 ];
 
 /**
@@ -98,7 +104,7 @@ async function main() {
         // Create .cpp file at the root of the project
         await execa(`touch ${response.projectname}.cpp`);
 
-        await writeFile(join(cwd, "binding.gyp"), JSON.stringify(gyp, null, 4));
+        await writeFile(join(cwd, "binding.gyp"), JSON.stringify(gyp, null, FILE_INDENTATION));
     }
 
     // Handle Package.json
@@ -109,8 +115,21 @@ async function main() {
         const pkg = JSON.parse(buf.toString());
         pkg.name = `@slimio/${response.projectname}`;
         pkg.description = response.projectdesc;
+        pkg.dependencies = {};
         pkg.devDependencies = {};
 
+        // Search for Dependencies if NAPI
+        if (response.is_napi) {
+            console.log("Seeking latest package(s) version for napi!");
+            const pkgVersions = await Promise.all(
+                NAPI_DEPENDENCIES.map((pkgName) => getLastPackageVersion(pkgName))
+            );
+            for (const [name, version] of pkgVersions) {
+                pkg.dependencies[name] = `^${version}`;
+            }
+        }
+
+        // Search for DevDependencies
         console.log("Seeking latest package(s) version on npm registery!");
         const pkgVersions = await Promise.all(
             DEV_DEPENDENCIES.map((pkgName) => getLastPackageVersion(pkgName))
@@ -119,7 +138,7 @@ async function main() {
             pkg.devDependencies[name] = `^${version}`;
         }
 
-        await writeFile(cwdPackage, JSON.stringify(Object.assign(pkg, DEFAULT_PKG), null, 2));
+        await writeFile(cwdPackage, JSON.stringify(Object.assign(pkg, DEFAULT_PKG), null, FILE_INDENTATION));
     }
 
     // Handle README.md
