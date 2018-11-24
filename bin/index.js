@@ -19,6 +19,7 @@ const ROOT_DIR = join(__dirname, "..");
 const TEMPLATE_DIR = join(ROOT_DIR, "template");
 const DEFAULT_FILES_DIR = join(TEMPLATE_DIR, "defaultFiles");
 const DEFAULT_FILES_INCLUDE = join(TEMPLATE_DIR, "include");
+
 const DEV_DEPENDENCIES = [
     "@commitlint/cli",
     "@commitlint/config-conventional",
@@ -76,6 +77,9 @@ async function main() {
 
     // INCLUDERS_ASK
     if (response.includers === true) {
+        // Push devDependencies for NAPI project
+        DEV_DEPENDENCIES.push("node-gyp", "prebuildify");
+
         await execa("mkdir include");
         await transfertFiles(DEFAULT_FILES_INCLUDE, join(cwd, "include"));
 
