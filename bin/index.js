@@ -72,13 +72,17 @@ async function main() {
     // Write default projects files
     await transfertFiles(DEFAULT_FILES_DIR, cwd);
 
-    // Ask projectName/projectDesc and C++ INCLUDERS_ASK
+    // Ask projectName/projectDesc and if this is a NAPI Project
     const response = await inquirer.prompt(GEN_QUESTIONS);
 
     // If this is a NAPI project
     if (response.is_napi) {
         // Push devDependencies for NAPI project
         DEV_DEPENDENCIES.push("node-gyp", "prebuildify");
+
+        // Update DEFAULT_PKG Scripts
+        DEFAULT_PKG.scripts.prebuilds = "prebuildify --napi";
+        DEFAULT_PKG.scripts.build = "cross-env node-gyp configure && node-gyp build";
 
         await execa("mkdir include");
         await transfertFiles(DEFAULT_FILES_INCLUDE, join(cwd, "include"));
