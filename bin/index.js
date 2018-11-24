@@ -43,8 +43,14 @@ const DEV_DEPENDENCIES = [
 async function getLastPackageVersion(pkgName) {
     const { body } = await got(`https://registry.npmjs.org/${pkgName}`);
     const reg = JSON.parse(body);
+    const times = Object.keys(reg.time);
 
-    return [pkgName, Object.keys(reg.time).pop()];
+    let version;
+    do {
+        version = times.pop();
+    } while (version === "modified" || version === "created");
+
+    return [pkgName, version];
 }
 
 /**

@@ -20,5 +20,4 @@ The package will install globally the command `generator`. Just run this command
 
 - Automatically find Node.js C++ header (for C Project).
 - Find/Install C++ project dependencies.
-- Fix/Improve search of npm package(s) in the registry (not perfect yet).
 - Add test
