@@ -75,8 +75,8 @@ async function main() {
     // Ask projectName/projectDesc and C++ INCLUDERS_ASK
     const response = await inquirer.prompt(GEN_QUESTIONS);
 
-    // INCLUDERS_ASK
-    if (response.includers === true) {
+    // If this is a NAPI project
+    if (response.is_napi) {
         // Push devDependencies for NAPI project
         DEV_DEPENDENCIES.push("node-gyp", "prebuildify");
 
@@ -90,6 +90,9 @@ async function main() {
         // eslint-disable-next-line
         gyp.targets[0].target_name = response.projectname;
         gyp.targets[0].sources = `${response.projectname}.cpp`;
+
+        // Create .cpp file at the root of the project
+        await execa(`touch ${response.projectname}.cpp`);
 
         await writeFile(join(cwd, "binding.gyp"), JSON.stringify(gyp, null, 4));
     }
