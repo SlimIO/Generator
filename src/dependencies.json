@@ -1,0 +1,20 @@
+{
+    "DEV_DEPENDENCIES": [
+        "@commitlint/cli",
+        "@commitlint/config-conventional",
+        "@escommunity/minami",
+        "@slimio/eslint-config",
+        "@types/node",
+        "ava",
+        "cross-env",
+        "eslint",
+        "husky",
+        "jsdoc",
+        "nyc",
+        "pkg-ok"
+    ],
+    "NAPI_DEPENCIES": [
+        "node-addon-api",
+        "node-gyp-build"
+    ]
+}

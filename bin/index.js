@@ -7,12 +7,10 @@ const { join } = require("path");
 // Require Third-party Dependencies
 const execa = require("execa");
 const inquirer = require("inquirer");
-const got = require("got");
 const Registry = require("@slimio/npm-registry");
 
 // Require Internal Dependencies
 const DEFAULT_PKG = require("../template/package.json");
-const GEN_QUESTIONS = require("../src/questions.json");
 const { transfertFiles } = require("../src/utils");
 
 // CONSTANTS
@@ -21,26 +19,8 @@ const ROOT_DIR = join(__dirname, "..");
 const TEMPLATE_DIR = join(ROOT_DIR, "template");
 const DEFAULT_FILES_DIR = join(TEMPLATE_DIR, "defaultFiles");
 const DEFAULT_FILES_INCLUDE = join(TEMPLATE_DIR, "include");
-
-const DEV_DEPENDENCIES = [
-    "@commitlint/cli",
-    "@commitlint/config-conventional",
-    "@escommunity/minami",
-    "@slimio/eslint-config",
-    "@types/node",
-    "ava",
-    "cross-env",
-    "eslint",
-    "husky",
-    "jsdoc",
-    "nyc",
-    "pkg-ok"
-];
-
-const NAPI_DEPENDENCIES = [
-    "node-addon-api",
-    "node-gyp-build"
-];
+const GEN_QUESTIONS = require("../src/questions.json");
+const { DEV_DEPENDENCIES, NAPI_DEPENDENCIES } = require("../src/dependencies.json");
 
 /**
  * @async

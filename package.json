@@ -15,7 +15,6 @@
   "dependencies": {
     "@slimio/npm-registry": "^0.2.0",
     "execa": "^1.0.0",
-    "got": "^9.3.2",
     "inquirer": "^6.2.0"
   },
   "devDependencies": {
