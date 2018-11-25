@@ -8,6 +8,7 @@ const { join } = require("path");
 const execa = require("execa");
 const inquirer = require("inquirer");
 const got = require("got");
+const Registry = require("@slimio/npm-registry");
 
 // Require Internal Dependencies
 const DEFAULT_PKG = require("../template/package.json");
@@ -40,25 +41,6 @@ const NAPI_DEPENDENCIES = [
     "node-addon-api",
     "node-gyp-build"
 ];
-
-/**
- * @async
- * @function getLastPackageVersion
- * @param {!String} pkgName pkgName
- * @returns {Promise<[String, String]>}
- */
-async function getLastPackageVersion(pkgName) {
-    const { body } = await got(`https://registry.npmjs.org/${pkgName}`);
-    const reg = JSON.parse(body);
-    const times = Object.keys(reg.time);
-
-    let version;
-    do {
-        version = times.pop();
-    } while (version === "modified" || version === "created");
-
-    return [pkgName, version];
-}
 
 /**
  * @async
@@ -109,6 +91,7 @@ async function main() {
 
     // Handle Package.json
     {
+        const npmRegistry = new Registry();
         const cwdPackage = join(cwd, "package.json");
 
         const buf = await readFile(cwdPackage);
@@ -121,21 +104,21 @@ async function main() {
         // Search for Dependencies if NAPI
         if (response.is_napi) {
             console.log("Seeking latest package(s) version for napi!");
-            const pkgVersions = await Promise.all(
-                NAPI_DEPENDENCIES.map((pkgName) => getLastPackageVersion(pkgName))
+            const Packages = await Promise.all(
+                NAPI_DEPENDENCIES.map((pkgName) => npmRegistry.package(pkgName))
             );
-            for (const [name, version] of pkgVersions) {
-                pkg.dependencies[name] = `^${version}`;
+            for (const Pkg of Packages) {
+                pkg.dependencies[Pkg.name] = `^${Pkg.lastVersion}`;
             }
         }
 
         // Search for DevDependencies
         console.log("Seeking latest package(s) version on npm registery!");
-        const pkgVersions = await Promise.all(
-            DEV_DEPENDENCIES.map((pkgName) => getLastPackageVersion(pkgName))
+        const Packages = await Promise.all(
+            DEV_DEPENDENCIES.map((pkgName) => npmRegistry.package(pkgName))
         );
-        for (const [name, version] of pkgVersions) {
-            pkg.devDependencies[name] = `^${version}`;
+        for (const Pkg of Packages) {
+            pkg.devDependencies[Pkg.name] = `^${Pkg.lastVersion}`;
         }
 
         await writeFile(cwdPackage, JSON.stringify(Object.assign(pkg, DEFAULT_PKG), null, FILE_INDENTATION));
