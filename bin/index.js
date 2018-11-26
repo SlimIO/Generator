@@ -59,7 +59,6 @@ async function main() {
         const buf = await readFile(join(TEMPLATE_DIR, "binding.gyp"));
         const gyp = JSON.parse(buf.toString());
 
-        // eslint-disable-next-line
         gyp.targets[0].target_name = response.projectname;
         gyp.targets[0].sources = `${response.projectname}.cpp`;
 
