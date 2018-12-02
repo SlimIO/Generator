@@ -1,13 +1,15 @@
 #!/usr/bin/env node
 
 // Require Node.js Dependencies
-const { readFile, writeFile } = require("fs").promises;
+const { readFile, writeFile, unlink, readdir, copyFile } = require("fs").promises;
 const { join } = require("path");
 
 // Require Third-party Dependencies
 const execa = require("execa");
 const inquirer = require("inquirer");
+const rmfr = require("rmfr");
 const Registry = require("@slimio/npm-registry");
+const { downloadNodeFile, extract, constants: { File } } = require("@slimio/nodejs-downloader");
 
 // Require Internal Dependencies
 const DEFAULT_PKG = require("../template/package.json");
@@ -21,6 +23,31 @@ const DEFAULT_FILES_DIR = join(TEMPLATE_DIR, "defaultFiles");
 const DEFAULT_FILES_INCLUDE = join(TEMPLATE_DIR, "include");
 const GEN_QUESTIONS = require("../src/questions.json");
 const { DEV_DEPENDENCIES, NAPI_DEPENDENCIES } = require("../src/dependencies.json");
+
+/**
+ * @async
+ * @func downloadNAPIHeader
+ * @desc Download and extract NAPI Headers
+ * @param {!String} includeDir include directory absolute path
+ * @returns {Promise<void>}
+ */
+async function downloadNAPIHeader(includeDir) {
+    const tarFile = await downloadNodeFile(File.Headers, {
+        dest: includeDir
+    });
+    const headerDir = await extract(tarFile);
+    await unlink(tarFile);
+
+    const [nodeVerDir] = await readdir(headerDir);
+    const nodeDir = join(headerDir, nodeVerDir, "include", "node");
+
+    await Promise.all([
+        copyFile(join(nodeDir, "node_api.h"), join(includeDir, "node_api.h")),
+        copyFile(join(nodeDir, "node_api_types.h"), join(includeDir, "node_api_types.h"))
+    ]);
+
+    await rmfr(headerDir);
+}
 
 /**
  * @async
@@ -52,8 +79,12 @@ async function main() {
         DEFAULT_PKG.scripts.prebuilds = "prebuildify --napi";
         DEFAULT_PKG.scripts.build = "cross-env node-gyp configure && node-gyp build";
 
+        // Download include files
+        const includeDir = join(cwd, "include");
         await execa("mkdir include");
-        await transfertFiles(DEFAULT_FILES_INCLUDE, join(cwd, "include"));
+
+        await downloadNAPIHeader(includeDir);
+        await transfertFiles(DEFAULT_FILES_INCLUDE, includeDir);
 
         // Handle binding.gyp
         const buf = await readFile(join(TEMPLATE_DIR, "binding.gyp"));
