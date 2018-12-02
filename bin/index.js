@@ -83,6 +83,7 @@ async function main() {
         const includeDir = join(cwd, "include");
         await execa("mkdir include");
 
+        console.log("Download NAPI C/C++ header");
         await downloadNAPIHeader(includeDir);
         await transfertFiles(DEFAULT_FILES_INCLUDE, includeDir);
 
@@ -143,6 +144,9 @@ async function main() {
         .replace(/\${desc}/gm, `${response.projectdesc}`);
 
     await writeFile(join(cwd, "README.md"), finalReadme);
+
+    console.log("Write index.js file!");
+    await execa("touch index.js");
 
     console.log("Done with no errors...");
 }
