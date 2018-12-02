@@ -13,7 +13,7 @@
         "nyc",
         "pkg-ok"
     ],
-    "NAPI_DEPENCIES": [
+    "NAPI_DEPENDENCIES": [
         "node-addon-api",
         "node-gyp-build"
     ]
