@@ -18,8 +18,6 @@ The package will install globally the command `generator`. Just run this command
 
 ## Roadmap
 
-- Create root `index.js` file
 - Ask if we want to start a project at `0.1.0` or `1.0.0`
 - Ask if we want to create the pre-push GIT hook.
-- Automatically find Node.js C++ header (for C Project).
 - Add test
