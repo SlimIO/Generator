@@ -13,5 +13,12 @@
         "message": "Voulez vous ajoutez les includer C++",
         "type": "confirm",
         "name": "is_napi"
+    },
+    {
+        "message": "In which version do you want to start : 1.0.0 or 0.1.0 ",
+        "type": "list",
+        "name": "version",
+        "choices": ["1.0.0", "0.1.0"],
+        "default": 0
     }
 ]

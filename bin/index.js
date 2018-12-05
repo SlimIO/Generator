@@ -108,6 +108,7 @@ async function main() {
         const buf = await readFile(cwdPackage);
         const pkg = JSON.parse(buf.toString());
         pkg.name = `@slimio/${response.projectname}`;
+        pkg.version = response.version;
         pkg.description = response.projectdesc;
         pkg.dependencies = {};
         pkg.devDependencies = {};
