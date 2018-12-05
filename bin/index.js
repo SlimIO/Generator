@@ -133,7 +133,13 @@ async function main() {
             pkg.devDependencies[Pkg.name] = `^${Pkg.lastVersion}`;
         }
 
-        await writeFile(cwdPackage, JSON.stringify(Object.assign(pkg, DEFAULT_PKG), null, FILE_INDENTATION));
+        let defaultPkgModif = "";
+        if (!response.husky) {
+            defaultPkgModif = DEFAULT_PKG;
+            delete defaultPkgModif.husky;
+        }
+        const fullPkg = response.husky ? Object.assign(pkg, DEFAULT_PKG) : Object.assign(pkg, defaultPkgModif);
+        await writeFile(cwdPackage, JSON.stringify(fullPkg, null, FILE_INDENTATION));
     }
 
     // Handle README.md

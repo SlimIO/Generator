@@ -20,5 +20,10 @@
         "name": "version",
         "choices": ["1.0.0", "0.1.0"],
         "default": 0
+    },
+    {
+        "message": "Do you want to insert husky hooks ?",
+        "type": "confirm",
+        "name": "husky"
     }
 ]
