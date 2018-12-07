@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // Require Node.js Dependencies
-const { readFile, writeFile, unlink, readdir, copyFile } = require("fs").promises;
+const { readFile, writeFile, unlink, readdir, copyFile, mkdir } = require("fs").promises;
 const { join } = require("path");
 
 // Require Third-party Dependencies
@@ -21,6 +21,7 @@ const ROOT_DIR = join(__dirname, "..");
 const TEMPLATE_DIR = join(ROOT_DIR, "template");
 const DEFAULT_FILES_DIR = join(TEMPLATE_DIR, "defaultFiles");
 const DEFAULT_FILES_INCLUDE = join(TEMPLATE_DIR, "include");
+const DEFAULT_FILES_TEST = join(TEMPLATE_DIR, "test");
 const GEN_QUESTIONS = require("../src/questions.json");
 const { DEV_DEPENDENCIES, NAPI_DEPENDENCIES } = require("../src/dependencies.json");
 
@@ -133,7 +134,13 @@ async function main() {
             pkg.devDependencies[Pkg.name] = `^${Pkg.lastVersion}`;
         }
 
-        if (!response.husky) {
+        if (response.husky) {
+            const buf = await readFile(join(DEFAULT_FILES_TEST, "test.js"));
+            const testFolderPath = join(cwd, "test");
+            await mkdir(testFolderPath);
+            await writeFile(join(testFolderPath, "test.js"), buf.toString());
+        }
+        else {
             delete DEFAULT_PKG.husky;
         }
         await writeFile(cwdPackage, JSON.stringify(Object.assign(pkg, DEFAULT_PKG), null, FILE_INDENTATION));
