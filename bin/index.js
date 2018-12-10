@@ -68,25 +68,6 @@ async function main() {
     // Write default projects files
     await transfertFiles(DEFAULT_FILES_DIR, cwd);
 
-    // Ask if the project is a binary project
-    const res = await inquirer.prompt({
-        message: "Is this project is a binary project ?",
-        type: "confirm",
-        name: "binary"
-    });
-    if (res.binary) {
-        await mkdir(join(cwd, "bin"));
-        DEFAULT_PKG.preferGlobal = true;
-        const resp = await inquirer.prompt({
-            message: "What is the name of the binary command ?",
-            type: "input",
-            name: "binName"
-        });
-        DEFAULT_PKG.bin = {};
-        DEFAULT_PKG.bin[resp.binName] = "./bin/index.js";
-        await writeFile(join(cwd, "bin", "index.js"), "#!/usr/bin/env node");
-    }
-
     // Ask projectName/projectDesc and if this is a NAPI Project
     const response = await inquirer.prompt(GEN_QUESTIONS);
 
@@ -118,6 +99,19 @@ async function main() {
         await execa(`touch ${response.projectname}.cpp`);
 
         await writeFile(join(cwd, "binding.gyp"), JSON.stringify(gyp, null, FILE_INDENTATION));
+    }
+
+    // If the project is a binary project
+    if (response.binary) {
+        await mkdir(join(cwd, "bin"));
+        const resp = await inquirer.prompt({
+            message: "What is the name of the binary command ?",
+            type: "input",
+            name: "binName"
+        });
+        DEFAULT_PKG.preferGlobal = true;
+        DEFAULT_PKG.bin = { [resp.binName]: "./bin/index.js" };
+        await writeFile(join(cwd, "bin", "index.js"), "#!/usr/bin/env node");
     }
 
     // Handle Package.json

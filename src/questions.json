@@ -1,5 +1,10 @@
 [
     {
+        "message": "Is this project is a binary project ?",
+        "type": "confirm",
+        "name": "binary"
+    },
+    {
         "message": "What is the name of your project",
         "type": "input",
         "name": "projectname"
