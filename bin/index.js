@@ -13,7 +13,7 @@ const { downloadNodeFile, extract, constants: { File } } = require("@slimio/node
 
 // Require Internal Dependencies
 const DEFAULT_PKG = require("../template/package.json");
-const { transfertFiles } = require("../src/utils");
+const { transfertFiles, tree } = require("../src/utils");
 
 // CONSTANTS
 const FILE_INDENTATION = 4;
@@ -111,7 +111,7 @@ async function main() {
         });
         DEFAULT_PKG.preferGlobal = true;
         DEFAULT_PKG.bin = { [resp.binName]: "./bin/index.js" };
-        await writeFile(join(cwd, "bin", "index.js"), "#!/usr/bin/env node");
+        await writeFile(join(cwd, "bin", "index1.js"), "#!/usr/bin/env node");
     }
 
     // Handle Package.json
@@ -173,5 +173,6 @@ async function main() {
     await execa("touch index.js");
 
     console.log("Done with no errors...");
+    await tree(cwd);
 }
 main().catch(console.error);
