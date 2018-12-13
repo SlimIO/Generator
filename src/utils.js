@@ -4,6 +4,7 @@ const {
     promises: { readdir, stat }
 } = require("fs");
 const { join } = require("path");
+const chalk = require("chalk");
 // Require Third-party Dependencies
 const is = require("@slimio/is");
 
@@ -41,10 +42,10 @@ async function transfertFiles(currDir, targetDir) {
  * @example
  * tree("C:/path/to/your/directory/direcnewProject");
  * output expected :
- * ┌─/bin
- * │   └ index1.js
- * ├─/test
- * │   └ test.js
+ * ┌─📁bin
+ * │ └ index1.js
+ * ├─📁test
+ * │ └ test.js
  * ├ .editorconfig
  * ├ .eslintrc
  * ├ .gitignore
@@ -70,26 +71,36 @@ async function tree(dir, pDepth = 0, pRootPath = null) {
     if (dir.match(/\\$/gi)) {
         dir = dir.replace(/\\$/gi, "");
     }
+    const rootPath = pRootPath === null ? dir : pRootPath;
+    // Calculate Depth with root folder and number of separators "\"
+    const depth = is.nullOrUndefined(dir.replace(rootPath, "").match(/\\\w+/g)) ?
+        0 : dir.replace(rootPath, "").match(/\\\w+/g).length;
+
     let strAddDepth = "";
-    if (pDepth > 0) {
-        for (let index = 0; index < pDepth; index++) {
-            strAddDepth += "│   ";
+    if (depth > 0) {
+        for (let index = 0; index < depth; index++) {
+            strAddDepth += "│ ";
         }
     }
 
-    const rootPath = pRootPath === null ? dir : pRootPath;
     const elems = await readdir(dir);
     const files = [];
     let count = 0;
 
+    // Print only one time at the begginning
+    if (depth === 0 && count === 0) {
+        console.log(chalk.greenBright("project tree :"));
+    }
+
     for (const elem of elems) {
         const xstat = await stat(join(dir, elem));
         if (xstat.isDirectory()) {
-            // Print folders before files in comparison to root folder
-            const depth = pDepth > 0 ? dir.replace(rootPath, "").match(/\\/g).length + 1 : 1;
-            // Only for the first folder beggin with ┌ insted of ├
-            const strDir = depth === 1 && count === 0 ? `┌─ 📁 ${elem}` : `├─ 📁${elem}`;
-            console.log(`${strAddDepth}${strDir}`);
+            // Print folders befor files
+            // Only for the first folder, beggin with ┌ insted of ├
+            const strDir = depth === 0 && count === 0 ?
+                chalk`{yellow ┌─📁}{yellow ${elem}}` :
+                chalk`{yellow ├─📁}{yellow ${elem}}`;
+            console.log(chalk`{yellow ${strAddDepth}}${(strDir)}`);
 
             await tree(join(dir, elem), depth, rootPath);
             count++;
@@ -100,7 +111,7 @@ async function tree(dir, pDepth = 0, pRootPath = null) {
     }
     const last = files.length - 1;
     // Print all files after folders
-    files.forEach((val, ind) => console.log(`${strAddDepth}${ind === last ? "└" : "├"} ${val}`));
+    files.forEach((val, ind) => console.log(chalk`{yellow ${strAddDepth}${ind === last ? "└" : "├"}} {cyanBright ${val}}`));
 }
 
 module.exports = {
