@@ -110,8 +110,10 @@ async function main() {
             name: "binName"
         });
         DEFAULT_PKG.preferGlobal = true;
-        DEFAULT_PKG.bin = { [resp.binName]: "./bin/index.js" };
-        await writeFile(join(cwd, "bin", "index1.js"), "#!/usr/bin/env node");
+        DEFAULT_PKG.bin = {
+            [resp.binName]: "./bin/index.js"
+        };
+        await writeFile(join(cwd, "bin", "index.js"), "#!/usr/bin/env node");
     }
 
     // Handle Package.json
