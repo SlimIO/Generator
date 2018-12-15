@@ -5,6 +5,7 @@ const {
 } = require("fs");
 const { join } = require("path");
 const chalk = require("chalk");
+
 // Require Third-party Dependencies
 const is = require("@slimio/is");
 
@@ -64,13 +65,14 @@ async function tree(dir, pDepth = 0, pRootPath = null) {
         throw new Error("Current working directory path is missing");
     }
     if (dir.match(/\//gi)) {
+        // eslint-disable-next-line
         dir = dir.replace(/\//gi, "\\");
-        // throw new Error("presence of /");
     }
-    // 
     if (dir.match(/\\$/gi)) {
+        // eslint-disable-next-line
         dir = dir.replace(/\\$/gi, "");
     }
+
     const rootPath = pRootPath === null ? dir : pRootPath;
     // Calculate Depth with root folder and number of separators "\"
     const depth = is.nullOrUndefined(dir.replace(rootPath, "").match(/\\\w+/g)) ?
@@ -88,7 +90,7 @@ async function tree(dir, pDepth = 0, pRootPath = null) {
     let count = 0;
 
     // Print only one time at the begginning
-    if (depth === 0 && count === 0) {
+    if (depth === 0) {
         console.log(chalk.greenBright("project tree :"));
     }
 
