@@ -174,7 +174,7 @@ async function main() {
     console.log("Write index.js file!");
     await execa("touch index.js");
 
-    console.log("Done with no errors...");
+    console.log("Done with no errors...\n\n");
     await tree(cwd);
 }
 main().catch(console.error);
