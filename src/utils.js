@@ -4,7 +4,7 @@ const {
     promises: { readdir, stat }
 } = require("fs");
 const { join } = require("path");
-const chalk = require("chalk");
+const { yellow, gray, green } = require("kleur");
 
 // Require Third-party Dependencies
 const is = require("@slimio/is");
@@ -41,7 +41,7 @@ async function transfertFiles(currDir, targetDir) {
  * @returns {void}
  *
  * @example
- * tree("C:/path/to/your/directory/direcnewProject");
+ * tree("C:/path/to/your/directory/newProject");
  * output expected :
  * ┌─📁bin
  * │ └ index1.js
@@ -81,7 +81,7 @@ async function tree(dir, pDepth = 0, pRootPath = null) {
     let strAddDepth = "";
     if (depth > 0) {
         for (let index = 0; index < depth; index++) {
-            strAddDepth += "│ ";
+            strAddDepth += yellow("│ ");
         }
     }
 
@@ -91,7 +91,7 @@ async function tree(dir, pDepth = 0, pRootPath = null) {
 
     // Print only one time at the begginning
     if (depth === 0) {
-        console.log(chalk.greenBright("project tree :"));
+        console.log(green("project tree :"));
     }
 
     for (const elem of elems) {
@@ -100,9 +100,9 @@ async function tree(dir, pDepth = 0, pRootPath = null) {
             // Print folders befor files
             // Only for the first folder, beggin with ┌ insted of ├
             const strDir = depth === 0 && count === 0 ?
-                chalk`{yellow ┌─📁}{yellow ${elem}}` :
-                chalk`{yellow ├─📁}{yellow ${elem}}`;
-            console.log(chalk`{yellow ${strAddDepth}}${(strDir)}`);
+                yellow(`┌─📁 ${elem}`) :
+                yellow(`├─📁 ${elem}`);
+            console.log(`${strAddDepth}${(strDir)}`);
 
             await tree(join(dir, elem), depth, rootPath);
             count++;
@@ -113,7 +113,7 @@ async function tree(dir, pDepth = 0, pRootPath = null) {
     }
     const last = files.length - 1;
     // Print all files after folders
-    files.forEach((val, ind) => console.log(chalk`{yellow ${strAddDepth}${ind === last ? "└" : "├"}} {cyanBright ${val}}`));
+    files.forEach((val, ind) => console.log(yellow(`${strAddDepth}${ind === last ? "└" : "├"} ${gray(`${val}`)}`)));
 }
 
 module.exports = {
