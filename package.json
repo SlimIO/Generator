@@ -17,7 +17,6 @@
     "@slimio/npm-registry": "^0.2.0",
     "execa": "^1.0.0",
     "inquirer": "^6.2.1",
-    "kleur": "^3.0.1",
     "rmfr": "^2.0.0"
   },
   "devDependencies": {
