@@ -13,7 +13,7 @@ const { downloadNodeFile, extract, constants: { File } } = require("@slimio/node
 
 // Require Internal Dependencies
 const DEFAULT_PKG = require("../template/package.json");
-const { transfertFiles, tree } = require("../src/utils");
+const { transfertFiles } = require("../src/utils");
 
 // CONSTANTS
 const FILE_INDENTATION = 4;
@@ -175,6 +175,5 @@ async function main() {
     await execa("touch index.js");
 
     console.log("Done with no errors...\n\n");
-    await tree(cwd);
 }
 main().catch(console.error);
