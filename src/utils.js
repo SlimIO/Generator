@@ -113,7 +113,9 @@ async function tree(dir, pDepth = 0, pRootPath = null) {
     }
     const last = files.length - 1;
     // Print all files after folders
-    files.forEach((val, ind) => console.log(yellow(`${strAddDepth}${ind === last ? "└" : "├"} ${gray(`${val}`)}`)));
+    for (const [ind, val] of files.entries()) {
+        console.log(yellow(`${strAddDepth}${ind === last ? "└" : "├"} ${gray(`${val}`)}`));
+    }
 }
 
 module.exports = {
