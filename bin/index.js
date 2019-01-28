@@ -166,6 +166,7 @@ async function main() {
     const buf = await readFile(join(TEMPLATE_DIR, "README.md"));
 
     const finalReadme = buf.toString()
+        .replace(/\${title}/gm, response.projectname)
         .replace(/\${package}/gm, `@slimio/${response.projectname}`)
         .replace(/\${desc}/gm, `${response.projectdesc}`);
 
