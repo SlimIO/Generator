@@ -93,7 +93,7 @@ async function main() {
         const gyp = JSON.parse(buf.toString());
 
         gyp.targets[0].target_name = response.projectname;
-        gyp.targets[0].sources = `${response.projectname}.cpp`;
+        gyp.targets[0].sources = [`${response.projectname}.cpp`];
 
         // Create .cpp file at the root of the project
         await execa(`touch ${response.projectname}.cpp`);
