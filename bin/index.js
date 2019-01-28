@@ -172,8 +172,10 @@ async function main() {
 
     await writeFile(join(cwd, "README.md"), finalReadme);
 
-    console.log("Write index.js file!");
-    await execa("touch index.js");
+    if (!response.binary) {
+        console.log("Write index.js file!");
+        await execa("touch index.js");
+    }
 
     console.log("Done with no errors...\n\n");
 }
