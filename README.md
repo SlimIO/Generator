@@ -19,5 +19,8 @@ The package will install globally the command `generator`. Just run this command
 
 > Note: if you'r working on the project itself, run `npm link` at the root of the project to get the global command.
 
+## Template files
+TBC
+
 ## License
 MIT
