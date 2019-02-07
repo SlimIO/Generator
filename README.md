@@ -5,6 +5,10 @@
 
 SlimIO Project Generator. This project has been created to help SlimIO contributors to generate new project boilerplate with all required files and configuration (as required by the Governance).
 
+<p align="center">
+    <img src="https://i.imgur.com/XoOwMbo.png" width="500">
+</p>
+
 ## Getting Started
 This package is available in the Node Package Repository and can be easily installed with [npm](https://docs.npmjs.com/getting-started/what-is-npm) or [yarn](https://yarnpkg.com).
 
