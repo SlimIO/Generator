@@ -41,6 +41,34 @@ $ generator
 | README.md | ❌ | Project README, main documentation entry |
 | binding.gyp | ✔️ | N-API (C/C++) configuration for native addons |
 
+## Project type
+
+### CLI
+When the project is a CLI (Command Line Interface). A `./bin` directory must be created with a root `index.js`. The root file must contains the following hashbang: `#!/usr/bin/env node`.
+
+package.json must be updated with the following fields:
+```json
+{
+    "preferGlobal": true,
+    "bin": {
+        "generator": "./bin/index.js"
+    },
+}
+```
+
+### N-API
+When the project is a native addon (Node.js N-API). An `./include` directory must be created and filled with the Node-addon-api headers.
+
+These files must be created at the current working dir location:
+- projectname.cpp
+- binding.gyp
+
+package.json must be updated with the following fields:
+```json
+{
+    "gypfile": true
+}
+```
 
 ## License
 MIT
