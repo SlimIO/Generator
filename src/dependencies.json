@@ -6,7 +6,6 @@
         "@slimio/eslint-config",
         "@types/node",
         "ava",
-        "cross-env",
         "eslint",
         "husky",
         "jsdoc",
