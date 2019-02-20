@@ -74,7 +74,7 @@ async function main() {
     // If this is a NAPI project
     if (response.is_napi) {
         // Push devDependencies for NAPI project
-        DEV_DEPENDENCIES.push("node-gyp", "prebuildify");
+        DEV_DEPENDENCIES.push("node-gyp", "prebuildify", "cross-env");
 
         // Update DEFAULT_PKG Scripts
         DEFAULT_PKG.scripts.prebuilds = "prebuildify --napi";
