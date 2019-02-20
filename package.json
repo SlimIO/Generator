@@ -13,7 +13,7 @@
     "report": "nyc report --reporter=html"
   },
   "dependencies": {
-    "@slimio/nodejs-downloader": "^0.1.0",
+    "@slimio/nodejs-downloader": "^0.3.0",
     "@slimio/npm-registry": "^0.3.1",
     "execa": "^1.0.0",
     "inquirer": "^6.2.1",
