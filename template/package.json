@@ -15,10 +15,7 @@
         "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
       }
     },
-    "keywords": [
-      "SlimIO",
-      "monitoring"
-    ],
+    "keywords": [],
     "author": "SlimIO",
     "license": "MIT",
     "nyc": {
