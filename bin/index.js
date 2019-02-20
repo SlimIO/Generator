@@ -167,6 +167,7 @@ async function main() {
 
     const finalReadme = buf.toString()
         .replace(/\${title}/gm, response.projectname)
+        .replace(/\${version}/gm, response.version)
         .replace(/\${package}/gm, `@slimio/${response.projectname}`)
         .replace(/\${desc}/gm, `${response.projectdesc}`);
 
