@@ -1,5 +1,5 @@
 # Generator
-![V0.5.0](https://img.shields.io/badge/version-0.5.0-blue.svg)
+![V0.5.1](https://img.shields.io/badge/version-0.5.1-blue.svg)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/SlimIO/Generator/commit-activity)
 [![GitHub license](https://img.shields.io/github/license/Naereen/StrapDown.js.svg)](https://github.com/SlimIO/Generator/blob/master/LICENSE)
 
