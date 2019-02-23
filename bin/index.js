@@ -9,11 +9,12 @@ const execa = require("execa");
 const inquirer = require("inquirer");
 const rmfr = require("rmfr");
 const Registry = require("@slimio/npm-registry");
+const ora = require("ora");
 const { downloadNodeFile, extract, constants: { File } } = require("@slimio/nodejs-downloader");
 
 // Require Internal Dependencies
 const DEFAULT_PKG = require("../template/package.json");
-const { transfertFiles } = require("../src/utils");
+const { transfertFiles, filterPackageName } = require("../src/utils");
 
 // CONSTANTS
 const FILE_INDENTATION = 4;
@@ -70,6 +71,11 @@ async function main() {
 
     // Ask projectName/projectDesc and if this is a NAPI Project
     const response = await inquirer.prompt(GEN_QUESTIONS);
+    const projectName = filterPackageName(response.projectname);
+    if (projectName.length <= 1 || projectName.length > 214) {
+        throw new Error("The project name must be of length 2<>214");
+    }
+    console.log(`Creating project: ${projectName}\n`);
 
     // If this is a NAPI project
     if (response.is_napi) {
@@ -92,11 +98,11 @@ async function main() {
         const buf = await readFile(join(TEMPLATE_DIR, "binding.gyp"));
         const gyp = JSON.parse(buf.toString());
 
-        gyp.targets[0].target_name = response.projectname;
-        gyp.targets[0].sources = [`${response.projectname}.cpp`];
+        gyp.targets[0].target_name = projectName;
+        gyp.targets[0].sources = [`${projectName}.cpp`];
 
         // Create .cpp file at the root of the project
-        await execa(`touch ${response.projectname}.cpp`);
+        await execa(`touch ${projectName}.cpp`);
 
         await writeFile(join(cwd, "binding.gyp"), JSON.stringify(gyp, null, FILE_INDENTATION));
     }
@@ -123,7 +129,7 @@ async function main() {
 
         const buf = await readFile(cwdPackage);
         const pkg = JSON.parse(buf.toString());
-        pkg.name = `@slimio/${response.projectname}`;
+        pkg.name = `@slimio/${projectName}`;
         pkg.version = response.version;
         pkg.description = response.projectdesc;
         pkg.dependencies = {};
@@ -166,9 +172,9 @@ async function main() {
     const buf = await readFile(join(TEMPLATE_DIR, "README.md"));
 
     const finalReadme = buf.toString()
-        .replace(/\${title}/gm, response.projectname)
+        .replace(/\${title}/gm, projectName)
         .replace(/\${version}/gm, response.version)
-        .replace(/\${package}/gm, `@slimio/${response.projectname}`)
+        .replace(/\${package}/gm, `@slimio/${projectName}`)
         .replace(/\${desc}/gm, `${response.projectdesc}`);
 
     await writeFile(join(cwd, "README.md"), finalReadme);
@@ -178,6 +184,9 @@ async function main() {
         await execa("touch index.js");
     }
 
-    console.log("Done with no errors...\n\n");
+    const spinner = ora("Installing packages...").start();
+    await execa("npm install");
+    spinner.succeed();
+    console.log("\n > Done with no errors...\n\n");
 }
 main().catch(console.error);

@@ -27,4 +27,18 @@ async function transfertFiles(currDir, targetDir) {
     }
 }
 
-module.exports = { transfertFiles };
+/**
+ * @func filterPackageName
+ * @param {!String} name package name
+ * @returns {String}
+ */
+function filterPackageName(name) {
+    return name
+        .trim()
+        .toLowerCase()
+        .replace(/\./, "")
+        .replace(/_/, "-")
+        .replace(/\s/, "");
+}
+
+module.exports = { transfertFiles, filterPackageName };
