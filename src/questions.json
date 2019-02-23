@@ -22,6 +22,11 @@
         "default": 0
     },
     {
+        "message": "Do you want a .env file ?",
+        "type": "confirm",
+        "name": "env"
+    },
+    {
         "message": "Do you want to insert husky hooks ?",
         "type": "confirm",
         "name": "husky"

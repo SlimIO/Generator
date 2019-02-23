@@ -77,6 +77,11 @@ async function main() {
     }
     console.log(`Creating project: ${projectName}\n`);
 
+    if (response.env) {
+        DEV_DEPENDENCIES.push("dotenv");
+        await execa("touch .env");
+    }
+
     // If this is a NAPI project
     if (response.is_napi) {
         // Push devDependencies for NAPI project
