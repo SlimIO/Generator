@@ -34,8 +34,8 @@
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["Boilerplate", "SlimIO", "Kick", "Starter", "Generator"],
+  "author": "SlimIO",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/SlimIO/Generator/issues"
