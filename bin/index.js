@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // Require Node.js Dependencies
-const { readFile, writeFile, unlink, readdir, copyFile, mkdir } = require("fs").promises;
+const { readFile, writeFile, unlink, readdir, copyFile, mkdir, appendFile } = require("fs").promises;
 const { join } = require("path");
 
 // Require Third-party Dependencies
@@ -91,9 +91,12 @@ async function main() {
         }
     }
 
-    if (response.env) {
+    if (response.env || response.covpackage === "c8") {
         DEV_DEPENDENCIES.push("dotenv");
         await execa("touch .env");
+        if (response.covpackage === "c8") {
+            await appendFile(join(cwd, ".env"), `NODE_V8_COVERAGE="${join(cwd, "coverage")}"\n`);
+        }
     }
 
     // If this is a NAPI project
