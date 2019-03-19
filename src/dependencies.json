@@ -9,7 +9,6 @@
         "eslint",
         "husky",
         "jsdoc",
-        "nyc",
         "pkg-ok"
     ],
     "NAPI_DEPENDENCIES": [

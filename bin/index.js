@@ -77,6 +77,20 @@ async function main() {
     }
     console.log(`Creating project: ${projectName}\n`);
 
+    switch (response.covpackage) {
+        case "nyc": {
+            DEV_DEPENDENCIES.push("nyc");
+            DEFAULT_PKG.scripts.coverage = "nyc npm test";
+            DEFAULT_PKG.scripts.report = "nyc report --reporter=html";
+            break;
+        }
+        case "c8": {
+            DEV_DEPENDENCIES.push("c8");
+            DEFAULT_PKG.scripts.coverage = "c8 -r=\"html\" npm test";
+            break;
+        }
+    }
+
     if (response.env) {
         DEV_DEPENDENCIES.push("dotenv");
         await execa("touch .env");

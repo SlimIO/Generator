@@ -10,6 +10,13 @@
         "name": "projectdesc"
     },
     {
+        "message": "Which coverage package do you want to install?",
+        "type": "list",
+        "name": "covpackage",
+        "choices": ["nyc", "c8"],
+        "default": 0
+    },
+    {
         "message": "Voulez vous ajoutez les includer C++",
         "type": "confirm",
         "name": "is_napi"
