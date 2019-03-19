@@ -29,6 +29,11 @@
     "type": "git",
     "url": "git+https://github.com/SlimIO/Generator.git"
   },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
   "keywords": [],
   "author": "",
   "license": "MIT",
