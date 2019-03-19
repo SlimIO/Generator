@@ -3,6 +3,7 @@
       "node": ">=10"
     },
     "scripts": {
+      "start": "node index.js",
       "prepublishOnly": "pkg-ok",
       "test": "ava --verbose",
       "doc": "jsdoc -c ./jsdoc.json -r -R ./README.md -P ./package.json --verbose",
