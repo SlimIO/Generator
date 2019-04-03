@@ -13,7 +13,7 @@
     "@slimio/npm-registry": "^0.3.1",
     "execa": "^1.0.0",
     "inquirer": "^6.2.1",
-    "ora": "^3.1.0",
+    "ora": "^3.3.1",
     "rmfr": "^2.0.0"
   },
   "devDependencies": {
