@@ -1,6 +1,7 @@
 {
   "name": "@slimio/generator",
   "version": "0.6.0",
+  "description": "SlimIO Project Generator",
   "main": "./bin/index.js",
   "preferGlobal": true,
   "bin": {
