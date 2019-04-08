@@ -4,7 +4,6 @@
         "@commitlint/config-conventional",
         "@escommunity/minami",
         "@slimio/eslint-config",
-        "@types/node",
         "ava",
         "eslint",
         "husky",
