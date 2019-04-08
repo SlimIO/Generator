@@ -9,6 +9,7 @@ const execa = require("execa");
 const inquirer = require("inquirer");
 const rmfr = require("rmfr");
 const Registry = require("@slimio/npm-registry");
+const manifest = require("@slimio/manifest");
 const ora = require("ora");
 const { downloadNodeFile, extract, constants: { File } } = require("@slimio/nodejs-downloader");
 
@@ -200,6 +201,21 @@ async function main() {
         .replace(/\${desc}/gm, `${response.projectdesc}`);
 
     await writeFile(join(cwd, "README.md"), finalReadme);
+
+    let type = "Package";
+    if (response.binary) {
+        type = "CLI";
+    }
+    else if (response.is_napi) {
+        type = "NAPI";
+    }
+
+    // Write Manifest
+    manifest.create({
+        name: projectName,
+        version: response.version,
+        type
+    });
 
     if (!response.binary) {
         console.log("Write index.js file!");

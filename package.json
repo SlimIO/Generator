@@ -9,6 +9,7 @@
   },
   "scripts": {},
   "dependencies": {
+    "@slimio/manifest": "^0.2.1",
     "@slimio/nodejs-downloader": "^0.4.0",
     "@slimio/npm-registry": "^0.3.1",
     "execa": "^1.0.0",
