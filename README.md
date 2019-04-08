@@ -9,6 +9,9 @@ SlimIO Project Generator. This project has been created to help SlimIO contribut
     <img src="https://i.imgur.com/XoOwMbo.png" width="500">
 </p>
 
+## Requirements
+- Node.js v10 or higher
+
 ## Getting Started
 This package is available in the Node Package Repository and can be easily installed with [npm](https://docs.npmjs.com/getting-started/what-is-npm) or [yarn](https://yarnpkg.com).
 
