@@ -7,7 +7,12 @@
   "bin": {
     "generator": "./bin/index.js"
   },
-  "scripts": {},
+  "scripts": {
+      "prepublishOnly": "pkg-ok"
+  },
+  "engines": {
+      "node": ">=10"
+  },
   "dependencies": {
     "@slimio/manifest": "^0.2.1",
     "@slimio/nodejs-downloader": "^0.4.0",
