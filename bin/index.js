@@ -138,7 +138,6 @@ async function main() {
             type: "input",
             name: "binName"
         });
-        DEFAULT_PKG.preferGlobal = true;
         DEFAULT_PKG.bin = {
             [resp.binName]: "./bin/index.js"
         };
