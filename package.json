@@ -7,10 +7,10 @@
     "generator": "./bin/index.js"
   },
   "scripts": {
-      "prepublishOnly": "pkg-ok"
+    "prepublishOnly": "pkg-ok"
   },
   "engines": {
-      "node": ">=10"
+    "node": ">=10"
   },
   "dependencies": {
     "@slimio/manifest": "^0.2.1",
