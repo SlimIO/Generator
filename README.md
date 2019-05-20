@@ -1,7 +1,9 @@
 # Generator
-![V0.5.1](https://img.shields.io/badge/version-0.5.1-blue.svg)
+![version](https://img.shields.io/badge/dynamic/json.svg?url=https://raw.githubusercontent.com/SlimIO/Generator/master/package.json&query=$.version&label=Version)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/SlimIO/Generator/commit-activity)
 [![GitHub license](https://img.shields.io/github/license/Naereen/StrapDown.js.svg)](https://github.com/SlimIO/Generator/blob/master/LICENSE)
+![dep](https://img.shields.io/david/SlimIO/Generator.svg)
+![size](https://img.shields.io/github/languages/code-size/SlimIO/Generator.svg)
 
 SlimIO Project Generator. This project has been created to help SlimIO contributors to generate new project boilerplate with all required files and configuration (as required by the Governance).
 
