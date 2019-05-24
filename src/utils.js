@@ -4,6 +4,10 @@ const { promisify } = require("util");
 const { join } = require("path");
 const stream = require("stream");
 
+// Require Third-party Dependencies
+const { taggedString } = require("@slimio/utils");
+
+// Create Async methods
 const pipeline = promisify(stream.pipeline);
 
 /**
@@ -39,4 +43,16 @@ function filterPackageName(name) {
         .replace(/\s/, "");
 }
 
-module.exports = { transfertFiles, filterPackageName };
+const cppTemplate = taggedString`
+#include "napi.h"
+
+Napi::Object Init(Napi::Env env, Napi::Object exports) {
+    // exports.Set("methodName", Napi::Function::New(env, methodName));
+
+    return exports;
+}
+
+NODE_API_MODULE(${0}, Init)
+`;
+
+module.exports = { transfertFiles, filterPackageName, cppTemplate };

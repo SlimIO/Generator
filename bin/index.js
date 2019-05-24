@@ -11,11 +11,12 @@ const rmfr = require("rmfr");
 const Registry = require("@slimio/npm-registry");
 const manifest = require("@slimio/manifest");
 const ora = require("ora");
+const utils = require("@slimio/utils");
 const { downloadNodeFile, extract, constants: { File } } = require("@slimio/nodejs-downloader");
 
 // Require Internal Dependencies
 const DEFAULT_PKG = require("../template/package.json");
-const { transfertFiles, filterPackageName } = require("../src/utils");
+const { transfertFiles, filterPackageName, cppTemplate } = require("../src/utils");
 
 // CONSTANTS
 const FILE_INDENTATION = 4;
@@ -65,7 +66,7 @@ async function main() {
     }
 
     // Create initial package.json
-    await execa("npm init -y");
+    await execa.shell("npm init -y");
 
     // Write default projects files
     await transfertFiles(DEFAULT_FILES_DIR, cwd);
@@ -94,7 +95,7 @@ async function main() {
 
     if (response.env || response.covpackage === "c8") {
         DEV_DEPENDENCIES.push("dotenv");
-        await execa("touch .env");
+        await writeFile(join(cwd, ".env"), "");
         if (response.covpackage === "c8") {
             await appendFile(join(cwd, ".env"), `NODE_V8_COVERAGE="${join(cwd, "coverage")}"\n`);
         }
@@ -110,12 +111,13 @@ async function main() {
         DEFAULT_PKG.scripts.build = "cross-env node-gyp configure && node-gyp build";
 
         // Download include files
-        const includeDir = join(cwd, "include");
-        await execa("mkdir include");
-
         console.log("Download NAPI C/C++ header");
-        await downloadNAPIHeader(includeDir);
-        await transfertFiles(DEFAULT_FILES_INCLUDE, includeDir);
+        {
+            const includeDir = join(cwd, "include");
+            await utils.createDirectory(join(cwd, "include"));
+            await downloadNAPIHeader(includeDir);
+            await transfertFiles(DEFAULT_FILES_INCLUDE, includeDir);
+        }
 
         // Handle binding.gyp
         const buf = await readFile(join(TEMPLATE_DIR, "binding.gyp"));
@@ -125,14 +127,15 @@ async function main() {
         gyp.targets[0].sources = [`${projectName}.cpp`];
 
         // Create .cpp file at the root of the project
-        await execa(`touch ${projectName}.cpp`);
-
-        await writeFile(join(cwd, "binding.gyp"), JSON.stringify(gyp, null, FILE_INDENTATION));
+        await Promise.all([
+            writeFile(join(cwd, `${projectName}.cpp`), cppTemplate(projectName)),
+            writeFile(join(cwd, "binding.gyp"), JSON.stringify(gyp, null, FILE_INDENTATION))
+        ]);
     }
 
     // If the project is a binary project
     if (response.binary) {
-        await mkdir(join(cwd, "bin"));
+        await utils.createDirectory(join(cwd, "bin"));
         const resp = await inquirer.prompt({
             message: "What is the name of the binary command ?",
             type: "input",
@@ -218,11 +221,11 @@ async function main() {
 
     if (!response.binary) {
         console.log("Write index.js file!");
-        await execa("touch index.js");
+        await writeFile("index.js", "");
     }
 
     const spinner = ora("Installing packages...").start();
-    await execa("npm install");
+    await execa.shell("npm install");
     spinner.succeed();
     console.log("\n > Done with no errors...\n\n");
 }
