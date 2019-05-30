@@ -32,5 +32,18 @@ $ cd project
 $ generator
 ```
 
+## Dependencies
+
+|Name|Refactoring|Security Risk|Usage|
+|---|---|---|---|
+|[@slimio/manifest](https://github.com/SlimIO/Manifester#readme)|Minor|High|Manifest config file|
+|[@slimio/nodejs-downloader](https://github.com/SlimIO/nodejs-downloader#readme)|Minor|High|Download Node.js|
+|[@slimio/npm-registry](https://github.com/SlimIO/npm-registry#readme)|Minor|High|NPM registry API|
+|[@slimio/utils](https://github.com/SlimIO/Utils#readme)|Minor|High|Bunch of useful functions|
+|[execa](https://github.com/sindresorhus/execa#readme)|Minor|High|Async exec|
+|[inquirer](https://github.com/SBoudrias/Inquirer.js#readme)|⚠️Major|Medium|CLI interaction|
+|[ora](https://github.com/sindresorhus/ora#readme)|Minor|low|CLI spinner|
+|[rmfr](https://github.com/shinnn/rmfr#readme)|⚠️Major|High|Remove recursive|
+
 ## License
 MIT
