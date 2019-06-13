@@ -8,7 +8,9 @@
         "eslint",
         "husky",
         "jsdoc",
-        "pkg-ok"
+        "pkg-ok",
+        "cross-env",
+        "@slimio/psp"
     ],
     "NAPI_DEPENDENCIES": [
         "node-addon-api",
