@@ -24,5 +24,8 @@ TBC
 ## API
 TBC
 
+## Dependencies
+This project have no dependencies.
+
 ## License
 MIT
