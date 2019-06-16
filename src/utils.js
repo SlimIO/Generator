@@ -43,6 +43,16 @@ function filterPackageName(name) {
         .replace(/\s/, "");
 }
 
+/**
+ * @function upperCase
+ * @desc Uppercase first letter of word
+ * @param {!String} word string to uppercase
+ * @returns {String}
+ */
+function upperCase(word) {
+    return word.charAt(0).toUpperCase() + word.slice(1);
+}
+
 const cppTemplate = taggedString`
 #include "napi.h"
 
@@ -55,4 +65,4 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
 NODE_API_MODULE(${0}, Init)
 `;
 
-module.exports = { transfertFiles, filterPackageName, cppTemplate };
+module.exports = { transfertFiles, filterPackageName, cppTemplate, upperCase };

@@ -16,7 +16,7 @@ const { downloadNodeFile, extract, constants: { File } } = require("@slimio/node
 
 // Require Internal Dependencies
 const DEFAULT_PKG = require("../template/package.json");
-const { transfertFiles, filterPackageName, cppTemplate } = require("../src/utils");
+const { transfertFiles, filterPackageName, cppTemplate, upperCase } = require("../src/utils");
 
 // CONSTANTS
 const FILE_INDENTATION = 4;
@@ -197,7 +197,7 @@ async function main() {
     const buf = await readFile(join(TEMPLATE_DIR, "README.md"));
 
     const finalReadme = buf.toString()
-        .replace(/\${title}/gm, projectName)
+        .replace(/\${title}/gm, upperCase(projectName))
         .replace(/\${version}/gm, response.version)
         .replace(/\${package}/gm, `@slimio/${projectName}`)
         .replace(/\${desc}/gm, `${response.projectdesc}`);
