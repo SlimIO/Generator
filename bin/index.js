@@ -195,8 +195,10 @@ async function main() {
     // Handle README.md
     console.log("Writing default README.md");
     const buf = await readFile(join(TEMPLATE_DIR, "README.md"));
+    const gettingStarted = await readFile(join(TEMPLATE_DIR, "readme", "default.md"), "utf-8");
 
     const finalReadme = buf.toString()
+        .replace(/\${getting_started}/gm, gettingStarted)
         .replace(/\${title}/gm, upperCase(projectName))
         .replace(/\${version}/gm, response.version)
         .replace(/\${package}/gm, `@slimio/${projectName}`)
