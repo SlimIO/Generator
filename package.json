@@ -7,7 +7,9 @@
     "generator": "./bin/index.js"
   },
   "scripts": {
-    "prepublishOnly": "pkg-ok"
+    "prepublishOnly": "pkg-ok",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "engines": {
     "node": ">=10"
@@ -20,7 +22,8 @@
     "execa": "^1.0.0",
     "inquirer": "^6.3.1",
     "ora": "^3.4.0",
-    "rmfr": "^2.0.0"
+    "rmfr": "^2.0.0",
+    "snyk": "^1.189.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^8.0.0",
@@ -52,5 +55,6 @@
   "bugs": {
     "url": "https://github.com/SlimIO/Generator/issues"
   },
-  "homepage": "https://github.com/SlimIO/Generator#readme"
+  "homepage": "https://github.com/SlimIO/Generator#readme",
+  "snyk": true
 }
