@@ -67,7 +67,7 @@ async function main() {
     }
 
     // Create initial package.json
-    await execa.shell("npm init -y");
+    await execa("npm init -y");
 
     // Write default projects files
     await transfertFiles(DEFAULT_FILES_DIR, cwd);
@@ -103,7 +103,7 @@ async function main() {
     }
 
     // If this is a NAPI project
-    if (response.is_napi) {
+    if (response.type === "NAPI") {
         // Push devDependencies for NAPI project
         DEV_DEPENDENCIES.push("node-gyp", "prebuildify", "cross-env");
 
@@ -135,7 +135,7 @@ async function main() {
     }
 
     // If the project is a binary project
-    if (response.binary) {
+    if (response.type === "CLI" || response.binary) {
         await utils.createDirectory(join(cwd, "bin"));
         const resp = await inquirer.prompt({
             message: "What is the name of the binary command ?",
@@ -162,7 +162,7 @@ async function main() {
         pkg.devDependencies = {};
 
         // Search for Dependencies if NAPI
-        if (response.is_napi) {
+        if (response.type === "NAPI") {
             console.log("Seeking latest package(s) version for napi!");
             const Packages = await Promise.all(
                 NAPI_DEPENDENCIES.map((pkgName) => npmRegistry.package(pkgName))
@@ -196,7 +196,8 @@ async function main() {
     // Handle README.md
     console.log("Writing default README.md");
     const buf = await readFile(join(TEMPLATE_DIR, "README.md"));
-    const gettingStarted = await readFile(join(TEMPLATE_DIR, "readme", "default.md"), "utf-8");
+    const MDTemplate = response.type === "Addon" ? "addon.md" : "default.md";
+    const gettingStarted = await readFile(join(TEMPLATE_DIR, "readme", MDTemplate), "utf-8");
 
     const finalReadme = buf.toString()
         .replace(/\${getting_started}/gm, gettingStarted)
@@ -207,20 +208,12 @@ async function main() {
 
     await writeFile(join(cwd, "README.md"), finalReadme);
 
-    let type = "Package";
-    if (response.binary) {
-        type = "CLI";
-    }
-    else if (response.is_napi) {
-        type = "NAPI";
-    }
-
     // Write Manifest
     manifest.create({
         name: projectName,
         version: response.version,
-        type
-    });
+        type: response.type
+    }, void 0, true);
 
     if (!response.binary) {
         console.log("Write index.js file!");
@@ -228,7 +221,7 @@ async function main() {
     }
 
     const spinner = ora("Installing packages...").start();
-    await execa.shell("npm install");
+    await execa("npm install");
     spinner.succeed();
     console.log("\n > Done with no errors...\n\n");
 }
