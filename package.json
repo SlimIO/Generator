@@ -23,10 +23,10 @@
     "inquirer": "^6.3.1",
     "ora": "^3.4.0",
     "rmfr": "^2.0.0",
-    "snyk": "^1.189.0"
+    "snyk": "^1.193.2"
   },
   "devDependencies": {
-    "@commitlint/cli": "^8.0.0",
+    "@commitlint/cli": "^8.1.0",
     "@commitlint/config-conventional": "^8.0.0",
     "@escommunity/minami": "^1.0.0",
     "@slimio/eslint-config": "^2.0.4",
