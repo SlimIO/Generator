@@ -1,3 +1,5 @@
+"use strict";
+
 // Require Node.js Dependencies
 const { createReadStream, createWriteStream, promises: { readdir } } = require("fs");
 const { promisify } = require("util");
@@ -13,9 +15,9 @@ const pipeline = promisify(stream.pipeline);
 /**
  * @async
  * @function transfertFiles
- * @desc Transfer all files in a given directory to a new given directory (the target).
- * @param {!String} currDir current Directory where file are stored
- * @param {!String} targetDir target Directory where files should be transfered
+ * @description Transfer all files in a given directory to a new given directory (the target).
+ * @param {!string} currDir current Directory where file are stored
+ * @param {!string} targetDir target Directory where files should be transfered
  * @returns {Promise<void>}
  */
 async function transfertFiles(currDir, targetDir) {
@@ -30,9 +32,9 @@ async function transfertFiles(currDir, targetDir) {
 }
 
 /**
- * @func filterPackageName
- * @param {!String} name package name
- * @returns {String}
+ * @function filterPackageName
+ * @param {!string} name package name
+ * @returns {string}
  */
 function filterPackageName(name) {
     return name
@@ -45,9 +47,9 @@ function filterPackageName(name) {
 
 /**
  * @function upperCase
- * @desc Uppercase first letter of word
- * @param {!String} word string to uppercase
- * @returns {String}
+ * @description Uppercase first letter of word
+ * @param {!string} word string to uppercase
+ * @returns {string}
  */
 function upperCase(word) {
     return word.charAt(0).toUpperCase() + word.slice(1);

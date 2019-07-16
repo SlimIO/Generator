@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+"use strict";
 
 // Require Node.js Dependencies
 const { readFile, writeFile, unlink, readdir, copyFile, mkdir, appendFile } = require("fs").promises;
@@ -30,9 +31,9 @@ const { DEV_DEPENDENCIES, NAPI_DEPENDENCIES } = require("../src/dependencies.jso
 
 /**
  * @async
- * @func downloadNAPIHeader
- * @desc Download and extract NAPI Headers
- * @param {!String} includeDir include directory absolute path
+ * @function downloadNAPIHeader
+ * @description Download and extract NAPI Headers
+ * @param {!string} includeDir include directory absolute path
  * @returns {Promise<void>}
  */
 async function downloadNAPIHeader(includeDir) {
@@ -56,7 +57,7 @@ async function downloadNAPIHeader(includeDir) {
 /**
  * @async
  * @function main
- * @desc Main Generator CLI
+ * @description Main Generator CLI
  * @returns {Promise<void>}
  */
 async function main() {
