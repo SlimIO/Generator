@@ -226,7 +226,7 @@ async function main() {
 
     if (!response.binary) {
         console.log("Write index.js file!");
-        await writeFile("index.js", "");
+        await writeFile("index.js", "\"use strict\";\n");
     }
 
     const spinner = new Spinner().start("Installing packages...");
