@@ -38,18 +38,28 @@ const { DEV_DEPENDENCIES, NAPI_DEPENDENCIES } = require("../src/dependencies.jso
  */
 async function downloadNAPIHeader(dest) {
     const tarFile = await downloadNodeFile(File.Headers, { dest });
-    const headerDir = await extract(tarFile);
-    await unlink(tarFile);
 
-    const [nodeVerDir] = await readdir(headerDir);
-    const nodeDir = join(headerDir, nodeVerDir, "include", "node");
+    /** @type {string} */
+    let headerDir;
+    try {
+        headerDir = await extract(tarFile);
+    }
+    finally {
+        await unlink(tarFile);
+    }
 
-    await Promise.all([
-        copyFile(join(nodeDir, "node_api.h"), join(dest, "node_api.h")),
-        copyFile(join(nodeDir, "node_api_types.h"), join(dest, "node_api_types.h"))
-    ]);
+    try {
+        const [nodeVerDir] = await readdir(headerDir);
+        const nodeDir = join(headerDir, nodeVerDir, "include", "node");
 
-    await premove(headerDir);
+        await Promise.all([
+            copyFile(join(nodeDir, "node_api.h"), join(dest, "node_api.h")),
+            copyFile(join(nodeDir, "node_api_types.h"), join(dest, "node_api_types.h"))
+        ]);
+    }
+    finally {
+        await premove(headerDir);
+    }
 }
 
 /**
