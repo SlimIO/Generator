@@ -8,7 +8,7 @@ const { join } = require("path");
 // Require Third-party Dependencies
 const execa = require("execa");
 const inquirer = require("inquirer");
-const rmfr = require("rmfr");
+const premove = require("premove");
 const Registry = require("@slimio/npm-registry");
 const manifest = require("@slimio/manifest");
 const ora = require("ora");
@@ -33,13 +33,11 @@ const { DEV_DEPENDENCIES, NAPI_DEPENDENCIES } = require("../src/dependencies.jso
  * @async
  * @function downloadNAPIHeader
  * @description Download and extract NAPI Headers
- * @param {!string} includeDir include directory absolute path
+ * @param {!string} dest include directory absolute path
  * @returns {Promise<void>}
  */
-async function downloadNAPIHeader(includeDir) {
-    const tarFile = await downloadNodeFile(File.Headers, {
-        dest: includeDir
-    });
+async function downloadNAPIHeader(dest) {
+    const tarFile = await downloadNodeFile(File.Headers, { dest });
     const headerDir = await extract(tarFile);
     await unlink(tarFile);
 
@@ -47,11 +45,11 @@ async function downloadNAPIHeader(includeDir) {
     const nodeDir = join(headerDir, nodeVerDir, "include", "node");
 
     await Promise.all([
-        copyFile(join(nodeDir, "node_api.h"), join(includeDir, "node_api.h")),
-        copyFile(join(nodeDir, "node_api_types.h"), join(includeDir, "node_api_types.h"))
+        copyFile(join(nodeDir, "node_api.h"), join(dest, "node_api.h")),
+        copyFile(join(nodeDir, "node_api_types.h"), join(dest, "node_api_types.h"))
     ]);
 
-    await rmfr(headerDir);
+    await premove(headerDir);
 }
 
 /**
