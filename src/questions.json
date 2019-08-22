@@ -1,48 +1,45 @@
 [
     {
-        "message": "What is the name of your project",
+        "query": "What is the name of your project",
         "type": "input",
-        "name": "projectname"
+        "handle": "projectname"
     },
     {
-        "message": "Add a description (optional)",
+        "query": "Add a description (optional)",
         "type": "input",
-        "name": "projectdesc"
+        "handle": "projectdesc"
     },
     {
-        "message": "What kind of project is this ? ",
-        "type": "list",
-        "name": "type",
-        "choices": ["Addon", "NAPI", "CLI", "Package", "Service"],
-        "default": 0
+        "query": "What kind of project is this ? ",
+        "type": "interactive",
+        "handle": "type",
+        "menu": ["Addon", "NAPI", "CLI", "Package", "Service"]
     },
     {
-        "message": "Which coverage package do you want to install?",
-        "type": "list",
-        "name": "covpackage",
-        "choices": ["nyc", "c8"],
-        "default": 0
+        "query": "Which coverage package do you want to install?",
+        "type": "interactive",
+        "handle": "covpackage",
+        "menu": ["nyc", "c8"]
     },
     {
-        "message": "In which version do you want to start : 1.0.0 or 0.1.0 ",
-        "type": "list",
-        "name": "version",
-        "choices": ["1.0.0", "0.1.0"],
-        "default": 0
+        "query": "In which version do you want to start : 1.0.0 or 0.1.0 ",
+        "type": "interactive",
+        "handle": "version",
+        "menu": ["1.0.0", "0.1.0"]
     },
     {
-        "message": "Do you want a .env file ?",
+        "query": "Do you want a .env file ?",
         "type": "confirm",
-        "name": "env"
+        "handle": "env"
     },
     {
-        "message": "Do you want to insert husky hooks ?",
+        "query": "Do you want to insert husky hooks ?",
         "type": "confirm",
-        "name": "husky"
+        "handle": "husky"
     },
     {
-        "message": "Is this project is a binary project ?",
+        "query": "Is this project is a binary project ?",
         "type": "confirm",
-        "name": "binary"
+        "handle": "binary"
     }
 ]

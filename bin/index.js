@@ -7,7 +7,7 @@ const { join } = require("path");
 
 // Require Third-party Dependencies
 const execa = require("execa");
-const inquirer = require("inquirer");
+const qoa = require("qoa");
 const premove = require("premove");
 const Registry = require("@slimio/npm-registry");
 const manifest = require("@slimio/manifest");
@@ -84,7 +84,7 @@ async function main() {
     await transfertFiles(DEFAULT_FILES_DIR, cwd);
 
     // Ask projectName/projectDesc and if this is a NAPI Project
-    const response = await inquirer.prompt(GEN_QUESTIONS);
+    const response = await qoa.prompt(GEN_QUESTIONS);
     const projectName = filterPackageName(response.projectname);
     if (projectName.length <= 1 || projectName.length > 214) {
         throw new Error("The project name must be of length 2<>214");
@@ -148,13 +148,12 @@ async function main() {
     // If the project is a binary project
     if (response.type === "CLI" || response.binary) {
         await utils.createDirectory(join(cwd, "bin"));
-        const resp = await inquirer.prompt({
-            message: "What is the name of the binary command ?",
-            type: "input",
-            name: "binName"
+        const { binName } = await qoa.input({
+            query: "What is the name of the binary command ?",
+            handle: "binName"
         });
         DEFAULT_PKG.bin = {
-            [resp.binName]: "./bin/index.js"
+            [binName]: "./bin/index.js"
         };
         await writeFile(join(cwd, "bin", "index.js"), "#!/usr/bin/env node");
     }
@@ -231,7 +230,7 @@ async function main() {
         await writeFile("index.js", "");
     }
 
-    const spinner = new Spinner({ prefixText: "Installing packages..." }).start();
+    const spinner = new Spinner().start("Installing packages...");
     try {
         await execa("npm install");
         spinner.succeed();
