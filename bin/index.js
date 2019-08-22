@@ -6,7 +6,7 @@ const { readFile, writeFile, unlink, readdir, copyFile, mkdir, appendFile } = re
 const { join } = require("path");
 
 // Require Third-party Dependencies
-const execa = require("execa");
+const spawn = require("cross-spawn");
 const qoa = require("qoa");
 const premove = require("premove");
 const Registry = require("@slimio/npm-registry");
@@ -77,7 +77,7 @@ async function main() {
     }
 
     // Create initial package.json
-    await execa("npm init -y");
+    spawn.sync("npm", ["init", "-y"]);
 
     // Write default projects files
     await transfertFiles(DEFAULT_FILES_DIR, cwd);
@@ -231,7 +231,11 @@ async function main() {
 
     const spinner = new Spinner().start("Installing packages...");
     try {
-        await execa("npm install");
+        const child = spawn("npm", ["install"]);
+        await new Promise((resolve, reject) => {
+            child.once("close", resolve);
+            child.once("error", reject);
+        });
         spinner.succeed();
     }
     catch (err) {
