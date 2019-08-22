@@ -11,7 +11,7 @@ const inquirer = require("inquirer");
 const premove = require("premove");
 const Registry = require("@slimio/npm-registry");
 const manifest = require("@slimio/manifest");
-const ora = require("ora");
+const Spinner = require("@slimio/async-cli-spinner");
 const utils = require("@slimio/utils");
 const { downloadNodeFile, extract, constants: { File } } = require("@slimio/nodejs-downloader");
 
@@ -28,6 +28,9 @@ const DEFAULT_FILES_INCLUDE = join(TEMPLATE_DIR, "include");
 const DEFAULT_FILES_TEST = join(TEMPLATE_DIR, "test");
 const GEN_QUESTIONS = require("../src/questions.json");
 const { DEV_DEPENDENCIES, NAPI_DEPENDENCIES } = require("../src/dependencies.json");
+
+// Vars
+Spinner.DEFAULT_SPINNER = "dots";
 
 /**
  * @async
@@ -228,9 +231,14 @@ async function main() {
         await writeFile("index.js", "");
     }
 
-    const spinner = ora("Installing packages...").start();
-    await execa("npm install");
-    spinner.succeed();
+    const spinner = new Spinner({ prefixText: "Installing packages..." }).start();
+    try {
+        await execa("npm install");
+        spinner.succeed();
+    }
+    catch (err) {
+        spinner.failed(err.message);
+    }
     console.log("\n > Done with no errors...\n\n");
 }
 main().catch(console.error);
