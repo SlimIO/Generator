@@ -12,7 +12,6 @@ const premove = require("premove");
 const Registry = require("@slimio/npm-registry");
 const manifest = require("@slimio/manifest");
 const Spinner = require("@slimio/async-cli-spinner");
-const utils = require("@slimio/utils");
 const { downloadNodeFile, extract, constants: { File } } = require("@slimio/nodejs-downloader");
 
 // Require Internal Dependencies
@@ -126,7 +125,7 @@ async function main() {
         console.log("Download NAPI C/C++ header");
         {
             const includeDir = join(cwd, "include");
-            await utils.createDirectory(join(cwd, "include"));
+            await mkdir(join(cwd, "include"), { recursive: true });
             await downloadNAPIHeader(includeDir);
             await transfertFiles(DEFAULT_FILES_INCLUDE, includeDir);
         }
@@ -147,7 +146,7 @@ async function main() {
 
     // If the project is a binary project
     if (response.type === "CLI" || response.binary) {
-        await utils.createDirectory(join(cwd, "bin"));
+        await mkdir(join(cwd, "bin"), { recursive: true });
         const { binName } = await qoa.input({
             query: "What is the name of the binary command ?",
             handle: "binName"
