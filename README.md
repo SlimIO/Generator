@@ -5,14 +5,14 @@
 ![dep](https://img.shields.io/david/SlimIO/Generator.svg)
 ![size](https://img.shields.io/github/languages/code-size/SlimIO/Generator.svg)
 
-SlimIO Project Generator. This project has been created to help SlimIO contributors to generate new project boilerplate with all required files and configuration (as required by the Governance).
+SlimIO Project Generator. This project has been created to help SlimIO contributors **to generate new project without to have to worry** about required files and configuration (as required by the Governance and psp policies).
 
 <p align="center">
-    <img src="https://i.imgur.com/XoOwMbo.png" width="500">
+    <img src="https://i.imgur.com/kGzMr74.png">
 </p>
 
 ## Requirements
-- Node.js v10 or higher
+- [Node.js](https://nodejs.org/en/) v12 or higher
 
 ## Getting Started
 This package is available in the Node Package Repository and can be easily installed with [npm](https://docs.npmjs.com/getting-started/what-is-npm) or [yarn](https://yarnpkg.com).
@@ -36,14 +36,15 @@ $ generator
 
 |Name|Refactoring|Security Risk|Usage|
 |---|---|---|---|
-|[@slimio/manifest](https://github.com/SlimIO/Manifester#readme)|Minor|High|Manifest config file|
+|[@slimio/async-cli-spinner](https://github.com/SlimIO/Async-cli-spinner)|Minor|Low|Multi async cli spinner|
+|[@slimio/manifest](https://github.com/SlimIO/Manifester#readme)|Minor|Low|Manifest config file|
 |[@slimio/nodejs-downloader](https://github.com/SlimIO/nodejs-downloader#readme)|Minor|High|Download Node.js|
-|[@slimio/npm-registry](https://github.com/SlimIO/npm-registry#readme)|Minor|High|NPM registry API|
+|[@slimio/npm-registry](https://github.com/SlimIO/npm-registry#readme)|Minor|Low|NPM registry API|
 |[@slimio/utils](https://github.com/SlimIO/Utils#readme)|Minor|High|Bunch of useful functions|
-|[execa](https://github.com/sindresorhus/execa#readme)|Minor|High|Async exec|
-|[inquirer](https://github.com/SBoudrias/Inquirer.js#readme)|⚠️Major|Medium|CLI interaction|
-|[ora](https://github.com/sindresorhus/ora#readme)|Minor|low|CLI spinner|
-|[rmfr](https://github.com/shinnn/rmfr#readme)|⚠️Major|High|Remove recursive|
+|[cross-spawn](https://github.com/moxystudio/node-cross-spawn)|Minor|High|TBC|
+|[kleur](https://github.com/lukeed/kleur)|Minor|Low|TTY color|
+|[premove](https://github.com/lukeed/premove#readme)|Minor|Low|light rm -rf implementation|
+|[qoa](https://github.com/klaussinani/qoa#readme)|Minor|Low|Minimal interactive command-line prompts|
 
 ## License
 MIT
