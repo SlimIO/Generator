@@ -4,6 +4,7 @@
 // Require Node.js Dependencies
 const { readFile, writeFile, unlink, readdir, copyFile, mkdir, appendFile } = require("fs").promises;
 const { join } = require("path");
+const { performance } = require("perf_hooks");
 
 // Require Third-party Dependencies
 const spawn = require("cross-spawn");
@@ -12,6 +13,7 @@ const premove = require("premove");
 const Registry = require("@slimio/npm-registry");
 const manifest = require("@slimio/manifest");
 const Spinner = require("@slimio/async-cli-spinner");
+const { gray, yellow, cyan, green, white, underline, red } = require("kleur");
 const { downloadNodeFile, extract, constants: { File } } = require("@slimio/nodejs-downloader");
 
 // Require Internal Dependencies
@@ -73,22 +75,33 @@ async function downloadNAPIHeader(dest) {
 async function main() {
     const cwd = process.cwd();
     if (cwd === ROOT_DIR || cwd === __dirname) {
-        throw new Error("Cannot execute at the root of the project");
+        console.log(red().bold("Cannot execute at the root of the project"));
+        process.exit(0);
     }
 
-    // Create initial package.json
-    spawn.sync("npm", ["init", "-y"]);
+    console.log(gray().bold(`\n > Executing generator at ${yellow().bold(cwd)}\n`));
 
-    // Write default projects files
+    // Create initial package.json && write default projects files
+    spawn.sync("npm", ["init", "-y"]);
     await transfertFiles(DEFAULT_FILES_DIR, cwd);
 
     // Ask projectName/projectDesc and if this is a NAPI Project
-    const response = await qoa.prompt(GEN_QUESTIONS);
+    const response = {};
+    for (const row of GEN_QUESTIONS) {
+        row.query = underline().white().bold(row.query);
+        if (row.type === "interactive") {
+            row.symbol = "->";
+        }
+        const ret = await qoa.prompt([row]);
+        Object.assign(response, ret);
+        console.log(gray().bold("----------------------------"));
+    }
     const projectName = filterPackageName(response.projectname);
     if (projectName.length <= 1 || projectName.length > 214) {
-        throw new Error("The project name must be of length 2<>214");
+        console.log(red().bold("The project name must be of length 2<>214"));
+        process.exit(0);
     }
-    console.log(`Creating project: ${projectName}\n`);
+    console.log(gray().bold(`\n > Start configuring project ${cyan().bold(projectName)}\n`));
 
     switch (response.covpackage) {
         case "nyc": {
@@ -104,12 +117,11 @@ async function main() {
         }
     }
 
-    if (response.env || response.covpackage === "c8") {
+    // Create .env file
+    if (response.type === "Service" || response.env || response.covpackage === "c8") {
         DEV_DEPENDENCIES.push("dotenv");
-        await writeFile(join(cwd, ".env"), "");
-        if (response.covpackage === "c8") {
-            await appendFile(join(cwd, ".env"), `NODE_V8_COVERAGE="${join(cwd, "coverage")}"\n`);
-        }
+        const envData = response.covpackage === "c8" ? `NODE_V8_COVERAGE="${join(cwd, "coverage")}"\n` : "";
+        await writeFile(join(cwd, ".env"), envData);
     }
 
     // If this is a NAPI project
@@ -122,39 +134,51 @@ async function main() {
         DEFAULT_PKG.scripts.build = "cross-env node-gyp configure && node-gyp build";
 
         // Download include files
-        console.log("Download NAPI C/C++ header");
-        {
+        const spinner = new Spinner({ prefixText: white().bold("Setup & configure N-API files") });
+        spinner.start("Downloading N-API Header");
+        try {
             const includeDir = join(cwd, "include");
+            const start = performance.now();
+
             await mkdir(join(cwd, "include"), { recursive: true });
-            await downloadNAPIHeader(includeDir);
-            await transfertFiles(DEFAULT_FILES_INCLUDE, includeDir);
+            await Promise.all([
+                downloadNAPIHeader(includeDir),
+                transfertFiles(DEFAULT_FILES_INCLUDE, includeDir),
+                async() => {
+                    const buf = await readFile(join(TEMPLATE_DIR, "binding.gyp"));
+                    const gyp = JSON.parse(buf.toString());
+
+                    gyp.targets[0].target_name = projectName;
+                    gyp.targets[0].sources = [`${projectName}.cpp`];
+
+                    // Create .cpp file at the root of the project
+                    await Promise.all([
+                        writeFile(join(cwd, `${projectName}.cpp`), cppTemplate(projectName)),
+                        writeFile(join(cwd, "binding.gyp"), JSON.stringify(gyp, null, FILE_INDENTATION))
+                    ]);
+                }
+            ]);
+
+            const executeTimeMs = green().bold(`${(performance.now() - start).toFixed(2)}ms`);
+            spinner.succeed(`Done in ${executeTimeMs}`);
         }
-
-        // Handle binding.gyp
-        const buf = await readFile(join(TEMPLATE_DIR, "binding.gyp"));
-        const gyp = JSON.parse(buf.toString());
-
-        gyp.targets[0].target_name = projectName;
-        gyp.targets[0].sources = [`${projectName}.cpp`];
-
-        // Create .cpp file at the root of the project
-        await Promise.all([
-            writeFile(join(cwd, `${projectName}.cpp`), cppTemplate(projectName)),
-            writeFile(join(cwd, "binding.gyp"), JSON.stringify(gyp, null, FILE_INDENTATION))
-        ]);
+        catch (err) {
+            spinner.failed(err.message);
+        }
     }
 
     // If the project is a binary project
     if (response.type === "CLI" || response.binary) {
         await mkdir(join(cwd, "bin"), { recursive: true });
+        await writeFile(join(cwd, "bin", "index.js"), "#!/usr/bin/env node");
+
         const { binName } = await qoa.input({
-            query: "What is the name of the binary command ?",
+            query: white().bold("What is the name of the binary command ?"),
             handle: "binName"
         });
-        DEFAULT_PKG.bin = {
-            [binName]: "./bin/index.js"
-        };
-        await writeFile(join(cwd, "bin", "index.js"), "#!/usr/bin/env node");
+        console.log(gray().bold("----------------------------\n"));
+
+        DEFAULT_PKG.bin = { [binName]: "./bin/index.js" };
     }
 
     // Handle Package.json
@@ -172,7 +196,6 @@ async function main() {
 
         // Search for Dependencies if NAPI
         if (response.type === "NAPI") {
-            console.log("Seeking latest package(s) version for napi!");
             const Packages = await Promise.all(
                 NAPI_DEPENDENCIES.map((pkgName) => npmRegistry.package(pkgName))
             );
@@ -182,12 +205,21 @@ async function main() {
         }
 
         // Search for DevDependencies
-        console.log("Seeking latest package(s) version on npm registery!");
-        const Packages = await Promise.all(
-            DEV_DEPENDENCIES.map((pkgName) => npmRegistry.package(pkgName))
-        );
-        for (const Pkg of Packages) {
-            pkg.devDependencies[Pkg.name] = `^${Pkg.lastVersion}`;
+        const spinner = new Spinner({ prefixText: white().bold("Seeking latest package(s) version") }).start("Fetching...");
+        try {
+            const start = performance.now();
+            const Packages = await Promise.all(
+                DEV_DEPENDENCIES.map((pkgName) => npmRegistry.package(pkgName))
+            );
+            for (const Pkg of Packages) {
+                pkg.devDependencies[Pkg.name] = `^${Pkg.lastVersion}`;
+            }
+
+            const executeTimeMs = green().bold(`${(performance.now() - start).toFixed(2)}ms`);
+            spinner.succeed(`Fetched all latest versions in ${executeTimeMs}`);
+        }
+        catch (err) {
+            spinner.failed(err.message);
         }
 
         if (response.husky) {
@@ -203,19 +235,30 @@ async function main() {
     }
 
     // Handle README.md
-    console.log("Writing default README.md");
-    const buf = await readFile(join(TEMPLATE_DIR, "README.md"));
-    const MDTemplate = response.type === "Addon" ? "addon.md" : "default.md";
-    const gettingStarted = await readFile(join(TEMPLATE_DIR, "readme", MDTemplate), "utf-8");
+    const ReadmeSpinner = new Spinner({ prefixText: white().bold("Setup README.md") }).start("Read file");
+    try {
+        const start = performance.now();
+        const buf = await readFile(join(TEMPLATE_DIR, "README.md"));
+        const MDTemplate = response.type === "Addon" ? "addon.md" : "default.md";
+        const gettingStarted = await readFile(join(TEMPLATE_DIR, "readme", MDTemplate), "utf-8");
 
-    const finalReadme = buf.toString()
-        .replace(/\${getting_started}/gm, gettingStarted)
-        .replace(/\${title}/gm, upperCase(projectName))
-        .replace(/\${version}/gm, response.version)
-        .replace(/\${package}/gm, `@slimio/${projectName}`)
-        .replace(/\${desc}/gm, `${response.projectdesc}`);
+        ReadmeSpinner.text = "Replacing inner variables...";
+        const finalReadme = buf.toString()
+            .replace(/\${getting_started}/gm, gettingStarted)
+            .replace(/\${title}/gm, upperCase(projectName))
+            .replace(/\${version}/gm, response.version)
+            .replace(/\${package}/gm, `@slimio/${projectName}`)
+            .replace(/\${desc}/gm, `${response.projectdesc}`);
 
-    await writeFile(join(cwd, "README.md"), finalReadme);
+        ReadmeSpinner.text = "Writing file to disk!";
+        await writeFile(join(cwd, "README.md"), finalReadme);
+
+        const executeTimeMs = green().bold(`${(performance.now() - start).toFixed(2)}ms`);
+        ReadmeSpinner.succeed(`Done in ${executeTimeMs}`);
+    }
+    catch (err) {
+        ReadmeSpinner.failed(err.message);
+    }
 
     // Write Manifest
     manifest.create({
@@ -225,22 +268,24 @@ async function main() {
     }, void 0, true);
 
     if (!response.binary) {
-        console.log("Write index.js file!");
         await writeFile("index.js", "\"use strict\";\n");
     }
 
-    const spinner = new Spinner().start("Installing packages...");
+    const spinner = new Spinner().start(white().bold(`Running '${cyan().bold("npm install")}' on node_modules ...`));
     try {
+        const start = performance.now();
         const child = spawn("npm", ["install"]);
         await new Promise((resolve, reject) => {
             child.once("close", resolve);
             child.once("error", reject);
         });
-        spinner.succeed();
+
+        const executeTimeMs = green().bold(`${((performance.now() - start) / 1000).toFixed(2)}ms`);
+        spinner.succeed(white().bold(`Packages installed in ${executeTimeMs}`));
     }
     catch (err) {
-        spinner.failed(err.message);
+        spinner.failed(red().bold(err.message));
     }
-    console.log("\n > Done with no errors...\n\n");
+    console.log(gray().bold("\n > Done with no errors...\n\n"));
 }
 main().catch(console.error);

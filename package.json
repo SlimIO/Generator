@@ -24,6 +24,7 @@
     "@slimio/npm-registry": "^0.5.0",
     "@slimio/utils": "^0.9.0",
     "cross-spawn": "^6.0.5",
+    "kleur": "^3.0.3",
     "premove": "^1.0.0",
     "qoa": "^0.2.0"
   },

@@ -1,11 +1,11 @@
 [
     {
-        "query": "What is the name of your project",
+        "query": "Name of the project ?",
         "type": "input",
         "handle": "projectname"
     },
     {
-        "query": "Add a description (optional)",
+        "query": "A description (optional) ?",
         "type": "input",
         "handle": "projectdesc"
     },
