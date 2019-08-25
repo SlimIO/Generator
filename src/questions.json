@@ -16,6 +16,12 @@
         "menu": ["Addon", "NAPI", "CLI", "Package", "Service"]
     },
     {
+        "query": "Which test framework do you want ?",
+        "type": "interactive",
+        "handle": "testfw",
+        "menu": ["japa", "ava", "jest"]
+    },
+    {
         "query": "Which coverage package do you want to install?",
         "type": "interactive",
         "handle": "covpackage",

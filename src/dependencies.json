@@ -4,7 +4,6 @@
         "@commitlint/config-conventional",
         "@escommunity/minami",
         "@slimio/eslint-config",
-        "ava",
         "eslint",
         "husky",
         "jsdoc",

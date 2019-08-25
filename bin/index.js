@@ -29,6 +29,11 @@ const DEFAULT_FILES_INCLUDE = join(TEMPLATE_DIR, "include");
 const DEFAULT_FILES_TEST = join(TEMPLATE_DIR, "test");
 const GEN_QUESTIONS = require("../src/questions.json");
 const { DEV_DEPENDENCIES, NAPI_DEPENDENCIES } = require("../src/dependencies.json");
+const TEST_SCRIPTS = {
+    ava: "cross-env psp && ava --verbose",
+    japa: "cross-env psp && node test/test.js",
+    jest: "cross-env psp && jest --coverage"
+};
 
 // Vars
 Spinner.DEFAULT_SPINNER = "dots";
@@ -69,14 +74,45 @@ async function downloadNAPIHeader(dest) {
 /**
  * @async
  * @function generateTest
+ * @param {!string} libName
  * @returns {Promise<void>}
  */
-async function generateTest() {
+async function generateTest(libName) {
     const testPath = join(process.cwd(), "test");
     await mkdir(testPath, { recursive: true });
 
-    const buf = await readFile(join(DEFAULT_FILES_TEST, "test.js"));
+    const buf = await readFile(join(DEFAULT_FILES_TEST, `${libName}.js`));
     await writeFile(join(testPath, "test.js"), buf.toString());
+}
+
+/**
+ * @async
+ * @function getQueriesResponse
+ * @returns {Promise<object>}
+ */
+async function getQueriesResponse() {
+    const response = {};
+    let skipNext = false;
+    for (const row of GEN_QUESTIONS) {
+        if (skipNext) {
+            skipNext = false;
+            continue;
+        }
+        row.query = underline().white().bold(row.query);
+        if (row.type === "interactive") {
+            row.symbol = "->";
+        }
+        const ret = await qoa.prompt([row]);
+        if (row.handle === "testfw" && ret.testfw === "jest") {
+            skipNext = true;
+            response.covpackage = null;
+        }
+
+        Object.assign(response, ret);
+        console.log(gray().bold("----------------------------"));
+    }
+
+    return response;
 }
 
 /**
@@ -98,17 +134,8 @@ async function main() {
     spawn.sync("npm", ["init", "-y"]);
     await transfertFiles(DEFAULT_FILES_DIR, cwd);
 
-    // Ask projectName/projectDesc and if this is a NAPI Project
-    const response = {};
-    for (const row of GEN_QUESTIONS) {
-        row.query = underline().white().bold(row.query);
-        if (row.type === "interactive") {
-            row.symbol = "->";
-        }
-        const ret = await qoa.prompt([row]);
-        Object.assign(response, ret);
-        console.log(gray().bold("----------------------------"));
-    }
+    // Prompt all questions
+    const response = await getQueriesResponse();
     const projectName = filterPackageName(response.projectname);
     if (projectName.length <= 1 || projectName.length > 214) {
         console.log(red().bold("The project name must be of length 2<>214"));
@@ -116,6 +143,8 @@ async function main() {
     }
     console.log(gray().bold(`\n > Start configuring project ${cyan().bold(projectName)}\n`));
 
+    DEFAULT_PKG.scripts.test = TEST_SCRIPTS[response.testfw];
+    DEV_DEPENDENCIES.push(response.testfw);
     switch (response.covpackage) {
         case "nyc": {
             DEV_DEPENDENCIES.push("nyc");
@@ -128,6 +157,8 @@ async function main() {
             DEFAULT_PKG.scripts.coverage = "c8 -r=\"html\" npm test";
             break;
         }
+        default:
+        // do nothing;
     }
 
     // Create .env file
@@ -235,7 +266,7 @@ async function main() {
             spinner.failed(err.message);
         }
 
-        await generateTest();
+        await generateTest(response.testfw);
         await writeFile(cwdPackage, JSON.stringify(Object.assign(pkg, DEFAULT_PKG), null, FILE_INDENTATION));
     }
 
