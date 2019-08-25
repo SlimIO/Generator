@@ -33,11 +33,6 @@
         "handle": "env"
     },
     {
-        "query": "Do you want to insert husky hooks ?",
-        "type": "confirm",
-        "handle": "husky"
-    },
-    {
         "query": "Is this project is a binary project ?",
         "type": "confirm",
         "handle": "binary"

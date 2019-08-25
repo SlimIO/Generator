@@ -68,6 +68,19 @@ async function downloadNAPIHeader(dest) {
 
 /**
  * @async
+ * @function generateTest
+ * @returns {Promise<void>}
+ */
+async function generateTest() {
+    const testPath = join(process.cwd(), "test");
+    await mkdir(testPath, { recursive: true });
+
+    const buf = await readFile(join(DEFAULT_FILES_TEST, "test.js"));
+    await writeFile(join(testPath, "test.js"), buf.toString());
+}
+
+/**
+ * @async
  * @function main
  * @description Main Generator CLI
  * @returns {Promise<void>}
@@ -222,15 +235,7 @@ async function main() {
             spinner.failed(err.message);
         }
 
-        if (response.husky) {
-            const buf = await readFile(join(DEFAULT_FILES_TEST, "test.js"));
-            const testFolderPath = join(cwd, "test");
-            await mkdir(testFolderPath);
-            await writeFile(join(testFolderPath, "test.js"), buf.toString());
-        }
-        else {
-            delete DEFAULT_PKG.husky;
-        }
+        await generateTest();
         await writeFile(cwdPackage, JSON.stringify(Object.assign(pkg, DEFAULT_PKG), null, FILE_INDENTATION));
     }
 
