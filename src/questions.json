@@ -11,35 +11,41 @@
     },
     {
         "query": "What kind of project is this ? ",
+        "description": "Documentation on each 'kind' can be found here: https://github.com/SlimIO/Manifest#available-types",
         "type": "interactive",
         "handle": "type",
-        "menu": ["Addon", "NAPI", "CLI", "Package", "Service"]
+        "menu": ["Addon", "NAPI", "CLI", "Package", "Service", "Degraded"]
     },
     {
-        "query": "Which test framework do you want ?",
+        "query": "Which unit-testing package do you want ?",
+        "description": "If you do not know what it is, take 'japa'",
         "type": "interactive",
         "handle": "testfw",
         "menu": ["japa", "ava", "jest"]
     },
     {
-        "query": "Which coverage package do you want to install?",
+        "query": "Which package do you want for code coverage ?",
+        "description": "If you do not know what it is, take 'nyc'",
         "type": "interactive",
         "handle": "covpackage",
         "menu": ["nyc", "c8"]
     },
     {
         "query": "In which version do you want to start : 1.0.0 or 0.1.0 ",
+        "description": "Choose 0.1.0 if the project is an experimentation (or will not be pushed to production after first draft).",
         "type": "interactive",
         "handle": "version",
         "menu": ["1.0.0", "0.1.0"]
     },
     {
         "query": "Do you want a .env file ?",
+        "description": ".env file are useful to store credentials (Database, WEB API tokens etc..)",
         "type": "confirm",
         "handle": "env"
     },
     {
-        "query": "Is this project is a binary project ?",
+        "query": "Is this project must have a binary entry ?",
+        "description": "Most of the time it's only required for CLI projects. Say 'no' if you dont know why you need this.",
         "type": "confirm",
         "handle": "binary"
     }

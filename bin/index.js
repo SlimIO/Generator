@@ -98,6 +98,11 @@ async function getQueriesResponse() {
             skipNext = false;
             continue;
         }
+        if (Reflect.has(row, "description")) {
+            console.log(`\n ${yellow().bold("> note:")} ${gray().bold(row.description)}\n`);
+            delete row.description;
+        }
+
         row.query = underline().white().bold(row.query);
         if (row.type === "interactive") {
             row.symbol = "->";
@@ -130,10 +135,6 @@ async function main() {
 
     console.log(gray().bold(`\n > Executing generator at ${yellow().bold(cwd)}\n`));
 
-    // Create initial package.json && write default projects files
-    spawn.sync("npm", ["init", "-y"]);
-    await transfertFiles(DEFAULT_FILES_DIR, cwd);
-
     // Prompt all questions
     const response = await getQueriesResponse();
     const projectName = filterPackageName(response.projectname);
@@ -142,6 +143,10 @@ async function main() {
         process.exit(0);
     }
     console.log(gray().bold(`\n > Start configuring project ${cyan().bold(projectName)}\n`));
+
+    // Create initial package.json && write default projects files
+    spawn.sync("npm", ["init", "-y"]);
+    await transfertFiles(DEFAULT_FILES_DIR, cwd);
 
     DEFAULT_PKG.scripts.test = TEST_SCRIPTS[response.testfw];
     DEV_DEPENDENCIES.push(response.testfw);
