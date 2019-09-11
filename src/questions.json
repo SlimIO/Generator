@@ -44,6 +44,12 @@
         "handle": "env"
     },
     {
+        "query": "Do you want a .npmrc file ?",
+        "description": ".npmrc file are useful to configure npm (Proxy, Registery etc..)",
+        "type": "confirm",
+        "handle": "npmrc"
+    },
+    {
         "query": "Is this project must have a binary entry ?",
         "description": "Most of the time it's only required for CLI projects. Say 'no' if you dont know why you need this.",
         "type": "confirm",

@@ -173,6 +173,12 @@ async function main() {
         await writeFile(join(cwd, ".env"), envData);
     }
 
+    // Create .npmrc file
+    if (response.type === "Service" || response.npmrc) {
+        const npmrcData = "package-lock=false";
+        await writeFile(join(cwd, ".npmrc"), npmrcData);
+    }
+
     // If this is a NAPI project
     if (response.type === "NAPI") {
         // Push devDependencies for NAPI project
@@ -193,7 +199,7 @@ async function main() {
             await Promise.all([
                 downloadNAPIHeader(includeDir),
                 transfertFiles(DEFAULT_FILES_INCLUDE, includeDir),
-                async() => {
+                async () => {
                     const buf = await readFile(join(TEMPLATE_DIR, "binding.gyp"));
                     const gyp = JSON.parse(buf.toString());
 
