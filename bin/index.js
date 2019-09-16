@@ -199,7 +199,7 @@ async function main() {
             await Promise.all([
                 downloadNAPIHeader(includeDir),
                 transfertFiles(DEFAULT_FILES_INCLUDE, includeDir),
-                async () => {
+                async() => {
                     const buf = await readFile(join(TEMPLATE_DIR, "binding.gyp"));
                     const gyp = JSON.parse(buf.toString());
 
