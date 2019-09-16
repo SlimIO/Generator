@@ -4,6 +4,7 @@
 [![MIT](https://img.shields.io/github/license/Naereen/StrapDown.js.svg)](https://github.com/SlimIO/Generator/blob/master/LICENSE)
 ![dep](https://img.shields.io/david/SlimIO/Generator.svg)
 ![size](https://img.shields.io/github/languages/code-size/SlimIO/Generator.svg)
+[![Known Vulnerabilities](https://snyk.io//test/github/SlimIO/Generator/badge.svg?targetFile=package.json)](https://snyk.io//test/github/SlimIO/Generator?targetFile=package.json)
 
 SlimIO Project Generator. This project has been created to help SlimIO contributors **to generate new project without to have to worry** about required files and configuration (as required by the Governance and psp policies).
 
