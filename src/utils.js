@@ -23,12 +23,14 @@ const pipeline = promisify(stream.pipeline);
 async function transfertFiles(currDir, targetDir) {
     const AllFiles = await readdir(currDir);
 
+    const _p = [];
     for (const fileName of AllFiles) {
-        await pipeline(
+        _p.push(pipeline(
             createReadStream(join(currDir, fileName)),
             createWriteStream(join(targetDir, fileName))
-        );
+        ));
     }
+    await Promise.all(_p);
 }
 
 /**
