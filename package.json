@@ -8,7 +8,7 @@
   },
   "scripts": {
     "doc": "jsdoc -c ./jsdoc.json -r -R ./README.md -P ./package.json --verbose",
-    "test": "node test/test",
+    "test": "cross-env psp && node test/test",
     "prepublishOnly": "pkg-ok"
   },
   "engines": {
