@@ -292,6 +292,7 @@ async function main() {
         ReadmeSpinner.text = "Replacing inner variables...";
         const finalReadme = buf.toString()
             .replace(/\${getting_started}/gm, gettingStarted)
+            .replace(/\${lower-name}/gm, projectName.toLocaleLowerCase())
             .replace(/\${title}/gm, upperCase(projectName))
             .replace(/\${version}/gm, response.version)
             .replace(/\${package}/gm, `@slimio/${projectName}`)
