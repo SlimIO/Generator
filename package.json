@@ -20,7 +20,7 @@
     "template"
   ],
   "dependencies": {
-    "@slimio/async-cli-spinner": "^0.3.1",
+    "@slimio/async-cli-spinner": "^0.4.0",
     "@slimio/manifest": "^0.7.1",
     "@slimio/nodejs-downloader": "^0.4.0",
     "@slimio/npm-registry": "^0.5.0",
@@ -64,6 +64,5 @@
   "bugs": {
     "url": "https://github.com/SlimIO/Generator/issues"
   },
-  "homepage": "https://github.com/SlimIO/Generator#readme",
-  "snyk": true
+  "homepage": "https://github.com/SlimIO/Generator#readme"
 }
