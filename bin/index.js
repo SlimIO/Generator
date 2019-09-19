@@ -15,7 +15,7 @@ const manifest = require("@slimio/manifest");
 const Spinner = require("@slimio/async-cli-spinner");
 const { gray, yellow, cyan, green, white, underline, red } = require("kleur");
 const { downloadNodeFile, extract, constants: { File } } = require("@slimio/nodejs-downloader");
-const { validate, sanitize } = require("@slimio/validate-addon-name");
+const { validate, CONSTANTS } = require("@slimio/validate-addon-name");
 
 // Require Internal Dependencies
 const DEFAULT_PKG = require("../template/package.json");
@@ -138,20 +138,15 @@ async function main() {
 
     // Prompt all questions
     const response = await getQueriesResponse();
-    let projectName = filterPackageName(response.projectname);
+    const projectName = filterPackageName(response.projectname);
     if (projectName.length <= 1 || projectName.length > 214) {
         console.log(red().bold("The project name must be of length 2<>214"));
         process.exit(0);
     }
 
-    // Sanitize the addon name
-    if (response.type === "Addon") {
-        projectName = sanitize(projectName);
-    }
-
     // Check the addon package name
     if (response.type === "Addon" && !validate(projectName)) {
-        console.log(red().bold("The addon name should not be a number"));
+        console.log(red().bold(`The addon name not matching expected regex ${CONSTANTS.VALIDATE_REGEX}`));
         process.exit(0);
     }
 
