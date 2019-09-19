@@ -15,6 +15,7 @@ const manifest = require("@slimio/manifest");
 const Spinner = require("@slimio/async-cli-spinner");
 const { gray, yellow, cyan, green, white, underline, red } = require("kleur");
 const { downloadNodeFile, extract, constants: { File } } = require("@slimio/nodejs-downloader");
+const { validate, sanitize } = require("@slimio/validate-addon-name");
 
 // Require Internal Dependencies
 const DEFAULT_PKG = require("../template/package.json");
@@ -137,11 +138,23 @@ async function main() {
 
     // Prompt all questions
     const response = await getQueriesResponse();
-    const projectName = filterPackageName(response.projectname);
+    let projectName = filterPackageName(response.projectname);
     if (projectName.length <= 1 || projectName.length > 214) {
         console.log(red().bold("The project name must be of length 2<>214"));
         process.exit(0);
     }
+
+    // Sanitize the addon name
+    if (response.type === "Addon") {
+        projectName = sanitize(projectName);
+    }
+
+    // Check the addon package name
+    if (response.type === "Addon" && !validate(projectName)) {
+        console.log(red().bold("The addon name should not be a number"));
+        process.exit(0);
+    }
+
     console.log(gray().bold(`\n > Start configuring project ${cyan().bold(projectName)}\n`));
 
     // Create initial package.json && write default projects files
