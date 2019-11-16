@@ -20,7 +20,7 @@
     "template"
   ],
   "dependencies": {
-    "@slimio/async-cli-spinner": "^0.4.0",
+    "@slimio/async-cli-spinner": "^0.5.1",
     "@slimio/manifest": "^0.7.1",
     "@slimio/nodejs-downloader": "^0.4.0",
     "@slimio/npm-registry": "^0.5.0",
