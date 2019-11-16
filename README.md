@@ -45,7 +45,6 @@ $ generator
 |[@slimio/utils](https://github.com/SlimIO/Utils#readme)|Minor|High|Bunch of useful functions|
 |[cross-spawn](https://github.com/moxystudio/node-cross-spawn)|Minor|High|TBC|
 |[kleur](https://github.com/lukeed/kleur)|Minor|Low|TTY color|
-|[premove](https://github.com/lukeed/premove#readme)|Minor|Low|light rm -rf implementation|
 |[qoa](https://github.com/klaussinani/qoa#readme)|Minor|Low|Minimal interactive command-line prompts|
 
 ## License

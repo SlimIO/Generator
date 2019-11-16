@@ -2,14 +2,13 @@
 "use strict";
 
 // Require Node.js Dependencies
-const { readFile, writeFile, unlink, readdir, copyFile, mkdir, appendFile } = require("fs").promises;
+const { readFile, writeFile, unlink, readdir, copyFile, mkdir, rmdir } = require("fs").promises;
 const { join } = require("path");
 const { performance } = require("perf_hooks");
 
 // Require Third-party Dependencies
 const spawn = require("cross-spawn");
 const qoa = require("qoa");
-const premove = require("premove");
 const Registry = require("@slimio/npm-registry");
 const manifest = require("@slimio/manifest");
 const Spinner = require("@slimio/async-cli-spinner");
@@ -68,7 +67,7 @@ async function downloadNAPIHeader(dest) {
         ]);
     }
     finally {
-        await premove(headerDir);
+        await rmdir(headerDir, { recursive: true });
     }
 }
 
