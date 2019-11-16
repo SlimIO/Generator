@@ -12,7 +12,7 @@
     "prepublishOnly": "pkg-ok"
   },
   "engines": {
-    "node": ">=10"
+    "node": ">=12"
   },
   "files": [
     "bin",
