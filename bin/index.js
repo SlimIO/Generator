@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable require-atomic-updates */
 "use strict";
 
 // Require Node.js Dependencies
@@ -154,7 +155,9 @@ async function main() {
     // Create initial package.json && write default projects files
     spawn.sync("npm", ["init", "-y"]);
     await transfertFiles(DEFAULT_FILES_DIR, cwd);
+    await mkdir(join(cwd, "src"), { recursive: true });
 
+    DEFAULT_PKG.keywords.push("SlimIO", projectName);
     DEFAULT_PKG.scripts.test = TEST_SCRIPTS[response.testfw];
     DEV_DEPENDENCIES.push(response.testfw);
     switch (response.covpackage) {
@@ -241,6 +244,7 @@ async function main() {
         console.log(gray().bold("----------------------------\n"));
 
         DEFAULT_PKG.bin = { [binName]: "./bin/index.js" };
+        DEFAULT_PKG.husky.hooks["pre-push"] = "cross-env eslint bin/index.js && npm test";
     }
 
     // Handle Package.json
