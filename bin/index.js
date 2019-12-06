@@ -16,6 +16,7 @@ const Spinner = require("@slimio/async-cli-spinner");
 const { gray, yellow, cyan, green, white, underline, red } = require("kleur");
 const { downloadNodeFile, extract, constants: { File } } = require("@slimio/nodejs-downloader");
 const { validate, CONSTANTS } = require("@slimio/validate-addon-name");
+const ms = require("ms");
 
 // Require Internal Dependencies
 const DEFAULT_PKG = require("../template/package.json");
@@ -108,7 +109,18 @@ async function getQueriesResponse() {
         if (row.type === "interactive") {
             row.symbol = "->";
         }
-        const ret = await qoa.prompt([row]);
+        let ret = await qoa.prompt([row]);
+
+        while (row.handle === 'projectname') {
+            ret.projectname = filterPackageName(ret.projectname);
+            if (ret.projectname.length <= 1 || ret.projectname.length > 214) {
+                console.log(red().bold("The project name must be of length 2<>214"));
+                ret = await qoa.prompt([row]);
+            }
+            else
+                break;
+        }
+
         if (row.handle === "testfw" && ret.testfw === "jest") {
             skipNext = true;
             response.covpackage = null;
@@ -138,15 +150,26 @@ async function main() {
 
     // Prompt all questions
     const response = await getQueriesResponse();
+    const projectName = response.projectname;
+
+    /*
     const projectName = filterPackageName(response.projectname);
     if (projectName.length <= 1 || projectName.length > 214) {
         console.log(red().bold("The project name must be of length 2<>214"));
         process.exit(0);
     }
+    */
 
     // Check the addon package name
     if (response.type === "Addon" && !validate(projectName)) {
         console.log(red().bold(`The addon name not matching expected regex ${CONSTANTS.VALIDATE_REGEX}`));
+        process.exit(0);
+    }
+
+    // Check if the developer want to install nodes modules
+    console.log (response);
+    if (response.modules === false) {
+        console.log("Nodes modules are required to run the project.");
         process.exit(0);
     }
 
@@ -338,8 +361,7 @@ async function main() {
             child.once("close", resolve);
             child.once("error", reject);
         });
-
-        const executeTimeMs = green().bold(`${((performance.now() - start) / 1000).toFixed(2)}ms`);
+        const executeTimeMs = green().bold(`${(ms(performance.now() - start))}`);
         spinner.succeed(white().bold(`Packages installed in ${executeTimeMs}`));
     }
     catch (err) {

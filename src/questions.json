@@ -54,5 +54,11 @@
         "description": "Most of the time it's only required for CLI projects. Say 'no' if you dont know why you need this.",
         "type": "confirm",
         "handle": "binary"
+    },
+    {
+        "query": "Do you want to install nodes modules ?",
+        "description": "Nodes modules are required for use the project",
+        "type": "confirm",
+        "handle": "modules"
     }
 ]
