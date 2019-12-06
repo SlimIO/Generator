@@ -111,14 +111,15 @@ async function getQueriesResponse() {
         }
         let ret = await qoa.prompt([row]);
 
-        while (row.handle === 'projectname') {
+        while (row.handle === "projectname") {
             ret.projectname = filterPackageName(ret.projectname);
             if (ret.projectname.length <= 1 || ret.projectname.length > 214) {
                 console.log(red().bold("The project name must be of length 2<>214"));
                 ret = await qoa.prompt([row]);
             }
-            else
+            else {
                 break;
+            }
         }
 
         if (row.handle === "testfw" && ret.testfw === "jest") {
@@ -167,7 +168,6 @@ async function main() {
     }
 
     // Check if the developer want to install nodes modules
-    console.log (response);
     if (response.modules === false) {
         console.log("Nodes modules are required to run the project.");
         process.exit(0);
@@ -361,7 +361,7 @@ async function main() {
             child.once("close", resolve);
             child.once("error", reject);
         });
-        const executeTimeMs = green().bold(`${(ms(performance.now() - start))}`);
+        const executeTimeMs = green().bold(`${ms(performance.now() - start)}`);
         spinner.succeed(white().bold(`Packages installed in ${executeTimeMs}`));
     }
     catch (err) {
