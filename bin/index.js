@@ -339,6 +339,7 @@ async function main() {
     }
 
     // Installation of nodes modules
+    console.log("");
     const { modules } = await qoa.prompt([MODULES_QUESTIONS]);
     if (modules) {
         const spinner = new Spinner().start(white().bold(`Running '${cyan().bold("npm install")}' on node_modules ...`));
