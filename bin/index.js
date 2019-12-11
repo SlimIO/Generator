@@ -340,25 +340,23 @@ async function main() {
 
     // Installation of nodes modules
     const { modules } = await qoa.prompt([MODULES_QUESTIONS]);
-    if (modules === false) {
-        console.log("Nodes modules aren't installed.");
-        process.exit(0);
+    if (modules) {
+        const spinner = new Spinner().start(white().bold(`Running '${cyan().bold("npm install")}' on node_modules ...`));
+        try {
+            const start = performance.now();
+            const child = spawn("npm", ["install"]);
+            await new Promise((resolve, reject) => {
+                child.once("close", resolve);
+                child.once("error", reject);
+            });
+            const executeTimeMs = green().bold(`${ms(performance.now() - start)}`);
+            spinner.succeed(white().bold(`Packages installed in ${executeTimeMs}`));
+        }
+        catch (err) {
+            spinner.failed(red().bold(err.message));
+        }
     }
 
-    const spinner = new Spinner().start(white().bold(`Running '${cyan().bold("npm install")}' on node_modules ...`));
-    try {
-        const start = performance.now();
-        const child = spawn("npm", ["install"]);
-        await new Promise((resolve, reject) => {
-            child.once("close", resolve);
-            child.once("error", reject);
-        });
-        const executeTimeMs = green().bold(`${ms(performance.now() - start)}`);
-        spinner.succeed(white().bold(`Packages installed in ${executeTimeMs}`));
-    }
-    catch (err) {
-        spinner.failed(red().bold(err.message));
-    }
     console.log(gray().bold("\n > Done with no errors...\n\n"));
 }
 main().catch(console.error);
