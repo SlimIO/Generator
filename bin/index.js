@@ -29,7 +29,7 @@ const TEMPLATE_DIR = join(ROOT_DIR, "template");
 const DEFAULT_FILES_DIR = join(TEMPLATE_DIR, "defaultFiles");
 const DEFAULT_FILES_INCLUDE = join(TEMPLATE_DIR, "include");
 const DEFAULT_FILES_TEST = join(TEMPLATE_DIR, "test");
-const GEN_QUESTIONS = require("../src/questions.json");
+const { GEN_QUESTIONS, MODULES_QUESTIONS } = require("../src/questions.json");
 const { DEV_DEPENDENCIES, NAPI_DEPENDENCIES } = require("../src/dependencies.json");
 const TEST_SCRIPTS = {
     ava: "cross-env psp && ava --verbose",
@@ -109,24 +109,24 @@ async function getQueriesResponse() {
         if (row.type === "interactive") {
             row.symbol = "->";
         }
-        let ret = await qoa.prompt([row]);
+        let ret;
 
-        while (row.handle === "projectname") {
-            ret.projectname = filterPackageName(ret.projectname);
-            if (ret.projectname.length <= 1 || ret.projectname.length > 214) {
-                console.log(red().bold("The project name must be of length 2<>214"));
-                ret = await qoa.prompt([row]);
+        while (true) {
+            ret = await qoa.prompt([row]);
+            if (row.handle === "projectname") {
+                ret.projectname = filterPackageName(ret.projectname);
+                if (ret.projectname.length <= 1 || ret.projectname.length > 214) {
+                    console.log(red().bold("The project name must be of length 2<>214"));
+                    continue;
+                }
             }
-            else {
-                break;
+
+            if (row.handle === "testfw" && ret.testfw === "jest") {
+                skipNext = true;
+                response.covpackage = null;
             }
+            break ;
         }
-
-        if (row.handle === "testfw" && ret.testfw === "jest") {
-            skipNext = true;
-            response.covpackage = null;
-        }
-
         Object.assign(response, ret);
         console.log(gray().bold("----------------------------"));
     }
@@ -153,26 +153,11 @@ async function main() {
     const response = await getQueriesResponse();
     const projectName = response.projectname;
 
-    /*
-    const projectName = filterPackageName(response.projectname);
-    if (projectName.length <= 1 || projectName.length > 214) {
-        console.log(red().bold("The project name must be of length 2<>214"));
-        process.exit(0);
-    }
-    */
-
     // Check the addon package name
     if (response.type === "Addon" && !validate(projectName)) {
         console.log(red().bold(`The addon name not matching expected regex ${CONSTANTS.VALIDATE_REGEX}`));
         process.exit(0);
     }
-
-    // Check if the developer want to install nodes modules
-    if (response.modules === false) {
-        console.log("Nodes modules are required to run the project.");
-        process.exit(0);
-    }
-
     console.log(gray().bold(`\n > Start configuring project ${cyan().bold(projectName)}\n`));
 
     // Create initial package.json && write default projects files
@@ -351,6 +336,13 @@ async function main() {
 
     if (!response.binary) {
         await writeFile("index.js", "\"use strict\";\n");
+    }
+
+    // Installation of nodes modules
+    const { modules } = await qoa.prompt([MODULES_QUESTIONS]);
+    if (modules === false) {
+        console.log("Nodes modules aren't installed.");
+        process.exit(0);
     }
 
     const spinner = new Spinner().start(white().bold(`Running '${cyan().bold("npm install")}' on node_modules ...`));
