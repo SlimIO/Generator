@@ -63,7 +63,9 @@ async function downloadNAPIHeader(dest) {
         const [nodeVerDir] = await readdir(headerDir);
         const nodeDir = join(headerDir, nodeVerDir, "include", "node");
 
-        await Promise.all([
+        await Promise.allSettled([
+            copyFile(join(nodeDir, "napi.h"), join(dest, "napi.h")),
+            copyFile(join(nodeDir, "napi-inl.h"), join(dest, "napi-inl.h")),
             copyFile(join(nodeDir, "node_api.h"), join(dest, "node_api.h")),
             copyFile(join(nodeDir, "node_api_types.h"), join(dest, "node_api_types.h"))
         ]);
@@ -214,28 +216,26 @@ async function main() {
             const start = performance.now();
 
             await mkdir(join(cwd, "include"), { recursive: true });
+            await downloadNAPIHeader(includeDir);
+            await transfertFiles(DEFAULT_FILES_INCLUDE, includeDir);
+            const buf = await readFile(join(TEMPLATE_DIR, "binding.gyp"));
+            const gyp = JSON.parse(buf.toString());
+
+            gyp.targets[0].target_name = projectName;
+            gyp.targets[0].sources = [`${projectName}.cpp`];
+
+            // Create .cpp file at the root of the project
             await Promise.all([
-                downloadNAPIHeader(includeDir),
-                transfertFiles(DEFAULT_FILES_INCLUDE, includeDir),
-                async() => {
-                    const buf = await readFile(join(TEMPLATE_DIR, "binding.gyp"));
-                    const gyp = JSON.parse(buf.toString());
-
-                    gyp.targets[0].target_name = projectName;
-                    gyp.targets[0].sources = [`${projectName}.cpp`];
-
-                    // Create .cpp file at the root of the project
-                    await Promise.all([
-                        writeFile(join(cwd, `${projectName}.cpp`), cppTemplate(projectName)),
-                        writeFile(join(cwd, "binding.gyp"), JSON.stringify(gyp, null, FILE_INDENTATION))
-                    ]);
-                }
+                writeFile(join(cwd, `${projectName}.cpp`), cppTemplate(projectName)),
+                writeFile(join(cwd, "binding.gyp"), JSON.stringify(gyp, null, FILE_INDENTATION))
             ]);
 
             const executeTimeMs = green().bold(`${(performance.now() - start).toFixed(2)}ms`);
             spinner.succeed(`Done in ${executeTimeMs}`);
         }
         catch (err) {
+            console.log(err);
+
             spinner.failed(err.message);
         }
     }
