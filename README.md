@@ -6,7 +6,6 @@
 ![size](https://img.shields.io/github/languages/code-size/SlimIO/Generator.svg)
 [![Known Vulnerabilities](https://snyk.io//test/github/SlimIO/Generator/badge.svg?targetFile=package.json)](https://snyk.io//test/github/SlimIO/Generator?targetFile=package.json)
 [![Build Status](https://travis-ci.com/SlimIO/Generator.svg?branch=master)](https://travis-ci.com/SlimIO/Generator)
-[![Greenkeeper badge](https://badges.greenkeeper.io/SlimIO/Generator.svg)](https://greenkeeper.io/)
 
 SlimIO Project Generator. This project has been created to help SlimIO contributors **to generate new project without to have to worry** about required files and configuration (as required by the Governance and psp policies).
 
@@ -18,12 +17,12 @@ SlimIO Project Generator. This project has been created to help SlimIO contribut
 - [Node.js](https://nodejs.org/en/) v12 or higher
 
 ## Getting Started
-This package is available in the Node Package Repository and can be easily installed with [npm](https://docs.npmjs.com/getting-started/what-is-npm) or [yarn](https://yarnpkg.com).
 
 ```bash
-$ npm i @slimio/generator
-# or
-$ yarn add @slimio/generator
+$ git clone https://github.com/SlimIO/Generator.git
+$ cd Generator
+$ npm ci
+$ npm link
 ```
 
 ## Usage example
