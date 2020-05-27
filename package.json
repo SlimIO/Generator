@@ -8,8 +8,9 @@
   },
   "scripts": {
     "doc": "jsdoc -c ./jsdoc.json -r -R ./README.md -P ./package.json --verbose",
-    "test": "cross-env psp && node test/test",
-    "prepublishOnly": "pkg-ok"
+    "test": "cross-env psp && nyc --reporter=lcov node test/test",
+    "prepublishOnly": "pkg-ok",
+    "coverage": "codecov"
   },
   "engines": {
     "node": ">=12"
@@ -37,12 +38,14 @@
     "@escommunity/minami": "^1.0.0",
     "@slimio/eslint-config": "^4.1.0",
     "@slimio/psp": "^0.11.1",
+    "codecov": "^3.7.0",
     "cross-env": "^7.0.2",
     "cz-conventional-changelog": "^3.2.0",
     "eslint": "^7.0.0",
     "husky": "^4.2.5",
     "japa": "^3.0.1",
     "jsdoc": "^3.6.4",
+    "nyc": "^15.0.1",
     "pkg-ok": "^2.3.1"
   },
   "repository": {
@@ -72,5 +75,13 @@
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
+  },
+  "nyc": {
+    "check-coverage": true,
+    "per-file": false,
+    "lines": 50,
+    "statements": 50,
+    "functions": 50,
+    "branches": 50
   }
 }
