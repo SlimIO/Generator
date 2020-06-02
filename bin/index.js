@@ -16,6 +16,7 @@ const Spinner = require("@slimio/async-cli-spinner");
 const { gray, yellow, cyan, green, white, underline, red } = require("kleur");
 const { downloadNodeFile, extract, constants: { File } } = require("@slimio/nodejs-downloader");
 const { validate, CONSTANTS } = require("@slimio/validate-addon-name");
+const { taggedString } = require("@slimio/utils");
 const ms = require("ms");
 
 // Require Internal Dependencies
@@ -32,9 +33,9 @@ const DEFAULT_FILES_TEST = join(TEMPLATE_DIR, "test");
 const { GEN_QUESTIONS, MODULES_QUESTIONS } = require("../src/questions.json");
 const { DEV_DEPENDENCIES, NAPI_DEPENDENCIES } = require("../src/dependencies.json");
 const TEST_SCRIPTS = {
-    ava: "cross-env psp && ava --verbose",
-    japa: "cross-env psp && node test/test.js",
-    jest: "cross-env psp && jest --coverage"
+    ava: taggedString`cross-env psp && ${0} ava --verbose`,
+    japa: taggedString`cross-env psp && ${0} node test/test.js`,
+    jest: taggedString`cross-env psp && jest --coverage`
 };
 
 // Vars
@@ -168,23 +169,24 @@ async function main() {
     await mkdir(join(cwd, "src"), { recursive: true });
 
     DEFAULT_PKG.keywords.push("SlimIO", projectName);
-    DEFAULT_PKG.scripts.test = TEST_SCRIPTS[response.testfw];
     DEV_DEPENDENCIES.push(response.testfw);
+    let coveragePrefix;
     switch (response.covpackage) {
         case "nyc": {
             DEV_DEPENDENCIES.push("nyc");
-            DEFAULT_PKG.scripts.coverage = "nyc npm test";
+            coveragePrefix = "nyc --reporter=lcov";
             DEFAULT_PKG.scripts.report = "nyc report --reporter=html";
             break;
         }
         case "c8": {
             DEV_DEPENDENCIES.push("c8");
-            DEFAULT_PKG.scripts.coverage = "c8 -r=\"html\" npm test";
+            coveragePrefix = "c8 -r=\"html\"";
             break;
         }
         default:
-        // do nothing;
+            // do nothing
     }
+    DEFAULT_PKG.scripts.test = TEST_SCRIPTS[response.testfw](coveragePrefix);
 
     // Create .env file
     if (response.type === "Service" || response.env || response.covpackage === "c8") {

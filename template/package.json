@@ -5,6 +5,7 @@
     "scripts": {
       "start": "node index.js",
       "prepublishOnly": "pkg-ok",
+      "coverage": "codecov",
       "doc": "jsdoc -c ./jsdoc.json -r -R ./README.md -P ./package.json --verbose"
     },
     "husky": {

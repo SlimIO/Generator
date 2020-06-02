@@ -9,7 +9,8 @@
         "jsdoc",
         "pkg-ok",
         "cross-env",
-        "@slimio/psp"
+        "@slimio/psp",
+        "codecov"
     ],
     "NAPI_DEPENDENCIES": [
         "node-addon-api",
