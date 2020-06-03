@@ -14,6 +14,7 @@
         "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
       }
     },
+    "files": [],
     "keywords": [],
     "author": "SlimIO",
     "license": "MIT",
